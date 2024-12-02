@@ -1,0 +1,1 @@
+This folder is for the GUI application that the user will install

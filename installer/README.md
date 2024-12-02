@@ -1,0 +1,1 @@
+This folder is for the installer that the user will download from the web-server that unpackages the GUI application
