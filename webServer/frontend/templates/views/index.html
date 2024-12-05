@@ -7,5 +7,30 @@
 </head>
 <body>
     Hello World
+   <!-- <a href = "/lorem.txt" download = "lorem.txt"> <button id = "Downlaodbtn">Download</button></a> -->
+   <button id = "Downlaodbtn" onclick = "downloadFile()">Download</button>
 </body>
 </html>
+
+<script>
+    async function downloadFile(){
+        try {
+         const response = await fetch("http://localhost:3000/download");
+         if (!response.ok) { 
+            throw new Error("Network response was not ok " + response.statusText); 
+        } 
+        const blob = await response.blob(); 
+        const url = window.URL.createObjectURL(blob); 
+        const a = document.createElement("a"); 
+        a.style.display = "none"; 
+        a.href = url; 
+        a.download = "lorem.txt"; // Set the desired file name here
+         document.body.appendChild(a); 
+        a.click();
+    }
+    catch(error)
+    {
+        console.error(error.message)
+    }
+}
+</script> 
