@@ -1,5 +1,5 @@
 # TODO: CircleCI is set up, need a test file
-
+[![CircleCI](https://dl.circleci.com/status-badge/img/circleci/BrNHZAoicsYJ158ioFqJF6/Lsxa62YsD5cPrPZvm7jyoU/tree/main.svg?style=svg)](https://dl.circleci.com/status-badge/redirect/circleci/BrNHZAoicsYJ158ioFqJF6/Lsxa62YsD5cPrPZvm7jyoU/tree/main)
 # Senior-Design-Project-L3M
 Project focusing on creating an online installer for open source llms. 
 
