@@ -1,4 +1,4 @@
-# TODO: SET UP CIRCLE CI, THIS NEEDS TO BE DONE BY THE REPO ADMIN (NICK)
+# TODO: CircleCI is set up, need a test file
 
 # Senior-Design-Project-L3M
 Project focusing on creating an online installer for open source llms. 
