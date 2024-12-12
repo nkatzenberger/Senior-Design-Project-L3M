@@ -1,8 +1,9 @@
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, send_file
 import requests
 import logging
 import random
 import sys
+import os
 from config import app
 #sys.path.append('backend')
 # Set up logging
@@ -64,6 +65,17 @@ def search():
 @app.route('/AboutUs')
 def About():
     return render_template('views/aboutUs.html')
+
+@app.route('/download', methods=['GET'])
+def download_file():
+    try:
+        # Path to the file to be served
+        base_dir = os.path.abspath(os.path.dirname(__file__))  # Path to 'backend' folder
+        file_path = os.path.join(base_dir, "..", "frontend", "public", "files", "lorem.txt")  # Adjust path to reach the file
+        # send_file serves the file for download
+        return send_file(file_path, as_attachment=True)
+    except Exception as e:
+        return f"An error occurred: {e}", 500
 
 if __name__ == '__main__':
     app.run(host="localhost", port=3000)
