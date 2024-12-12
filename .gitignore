@@ -1,2 +1,5 @@
 /.venv
+/.vscode
+/myenv
 /webServer/backend/__pycache__
+/GUI/models
