@@ -4,7 +4,6 @@ import logging
 import random
 import sys
 from config import app
-#app = Flask(__name__)
 #sys.path.append('backend')
 # Set up logging
 logging.basicConfig(level=logging.DEBUG)
@@ -61,6 +60,10 @@ def search():
     except requests.exceptions.RequestException as e:
         logger.error(f"Error fetching models: {e}")
         return jsonify({'error': 'Error fetching models'}), 500
+
+@app.route('/AboutUs')
+def About():
+    return render_template('views/aboutUs.html')
 
 if __name__ == '__main__':
     app.run(host="localhost", port=3000)
