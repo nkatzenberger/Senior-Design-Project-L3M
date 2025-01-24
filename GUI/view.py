@@ -1,9 +1,10 @@
 import sys
 import os
 from PyQt6.QtWidgets import *
-from PyQt6.QtCore import Qt  # Import Qt for alignment flags
+from PyQt6.QtCore import Qt, QEvent  # Import Qt for alignment flags
 from PyQt6.QtGui import QTextCursor
 from modelPrompt import PromptModel
+from modelDownload import DownloadModelWidget
 
 class GUI(QMainWindow):
     def __init__(self):
@@ -32,17 +33,24 @@ class GUI(QMainWindow):
         self.exampleLabel3 = QLabel("I am an example")
 
         self.exampleLabel1.setStyleSheet(
-            "background-color: #blue; padding: 8px; border-radius: 5px; font-size: 16pt; color: black;"
+            "background-color: #0000FF; padding: 8px; border-radius: 5px; font-size: 16pt; color: black;"
         )
         self.exampleLabel2.setStyleSheet(
-            "background-color: #red; padding: 8px; border-radius: 5px; font-size: 16pt; color: black;"
+            "background-color: #FF0000; padding: 8px; border-radius: 5px; font-size: 16pt; color: black;"
         )
         self.exampleLabel3.setStyleSheet(
-            "background-color: #green; padding: 8px; border-radius: 5px; font-size: 16pt; color: black;"
+            "background-color: #00FF00; padding: 8px; border-radius: 5px; font-size: 16pt; color: black;"
         )
         leftPanel.addWidget(self.exampleLabel1)
         leftPanel.addWidget(self.exampleLabel2)
         leftPanel.addWidget(self.exampleLabel3)
+
+        self.downloadModelButton = QPushButton("Download Model", self)
+        self.downloadModelButton.setStyleSheet(
+            "background-color: #222222; color: white; font-size: 16pt; padding: 8px; border-radius: 5px;"
+        )
+        self.downloadModelButton.clicked.connect(self.downloadModelButtonClicked)
+        leftPanel.addWidget(self.downloadModelButton)
 
 
 
@@ -81,6 +89,11 @@ class GUI(QMainWindow):
 
 
 #functions that are called with buttons etc..
+
+    def downloadModelButtonClicked(self):
+        #QMessageBox.information(self, "Button Clicked", "You clicked the left panel button!")
+        self.download_model_widget = DownloadModelWidget(self)
+        self.download_model_widget.show()
 
     #function that captures user text input
     def send_message(self):
