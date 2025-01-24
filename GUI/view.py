@@ -1,11 +1,17 @@
 import sys
+import os
 from PyQt6.QtWidgets import *
 from PyQt6.QtCore import Qt  # Import Qt for alignment flags
 from PyQt6.QtGui import QTextCursor
+from modelPrompt import PromptModel
 
 class GUI(QMainWindow):
     def __init__(self):
         super().__init__()
+
+        # Initialize Model
+        self.prompt_model = None
+        self.model_selected()  
 
         # Set up the window
         self.setWindowTitle("L3M GUI")
@@ -110,9 +116,19 @@ class GUI(QMainWindow):
             self.scroll_area.verticalScrollBar().maximum()
         )
 
-    def respond_to_message(self, message):
-        #TODO: dummy response, just repeats back to you for now, write logic here to get response from model
-        response = f"(Model Name): you said '{message}'"
+    def model_selected(self):
+        #Gets path to selected model
+        script_directory = os.path.dirname(os.path.abspath(__file__))
+        model_name = "openai-community-gpt2" #hardcoded selected model for now
+        model_path = os.path.join(script_directory, "models", model_name)
+
+        # Initialize the model
+        self.prompt_model = PromptModel(model_path)
+
+    def respond_to_message(self, message): 
+        if self.prompt_model is None:
+            raise ValueError("Model not initialized. Call 'model_selected' first.")
+        response = f'{self.prompt_model.generate_response(message)}'
         self.add_message(response, alignment=Qt.AlignmentFlag.AlignLeft, user=False)
 
 
