@@ -12,7 +12,7 @@ class GUI(QMainWindow):
 
         # Initialize Model
         self.prompt_model = None
-        self.model_selected()  
+        #self.model_selected()  
 
         # Set up the window
         self.setWindowTitle("L3M GUI")
@@ -26,20 +26,31 @@ class GUI(QMainWindow):
         leftPanel = QVBoxLayout() #everything at the left
         rightPanel = QVBoxLayout() #everything at the right
 
+        leftPanel.setSpacing(10)
+        leftPanel.setContentsMargins(10, 10, 10, 10)
+        leftPanel.setAlignment(Qt.AlignmentFlag.AlignTop)
         #LEFT PANEL CHAT WINDOW STUFF ################################################################################
         #TODO: these are just examples for the side panel. can be replaced with buttons, sub layouts, whatever
-        self.exampleLabel1 = QLabel("I am an example")
-        self.exampleLabel2 = QLabel("I am an example")
-        self.exampleLabel3 = QLabel("I am an example")
+
+        #these examples need to be programmatically added as new models are installed, should adopt acronym for model names for letter contents with full model name when hovering with the mouse
+        self.exampleLabel1 = QLabel("1")
+        self.exampleLabel1.setFixedSize(50,50)
+        self.exampleLabel1.setAlignment(Qt.AlignmentFlag.AlignTop)
+        self.exampleLabel2 = QLabel("2")
+        self.exampleLabel2.setFixedSize(50,50)
+        self.exampleLabel1.setAlignment(Qt.AlignmentFlag.AlignTop)
+        self.exampleLabel3 = QLabel("3")
+        self.exampleLabel3.setFixedSize(50,50)
+        self.exampleLabel1.setAlignment(Qt.AlignmentFlag.AlignTop)
 
         self.exampleLabel1.setStyleSheet(
-            "background-color: #0000FF; padding: 8px; border-radius: 5px; font-size: 16pt; color: black;"
+            "background-color: #c4c4c4; padding: 8px; border-radius: 25px; border: 3px solid #27F2FA; font-size: 16pt; color: black; text-align:center;"
         )
         self.exampleLabel2.setStyleSheet(
-            "background-color: #FF0000; padding: 8px; border-radius: 5px; font-size: 16pt; color: black;"
+            "background-color: #c4c4c4; padding: 8px; border-radius: 25px; font-size: 16pt; color: black; text-align:center;"
         )
         self.exampleLabel3.setStyleSheet(
-            "background-color: #00FF00; padding: 8px; border-radius: 5px; font-size: 16pt; color: black;"
+            "background-color: #c4c4c4; padding: 8px; border-radius: 25px; font-size: 16pt; color: black; text-align:center;"
         )
         leftPanel.addWidget(self.exampleLabel1)
         leftPanel.addWidget(self.exampleLabel2)
@@ -47,7 +58,7 @@ class GUI(QMainWindow):
 
         self.downloadModelButton = QPushButton("Download Model", self)
         self.downloadModelButton.setStyleSheet(
-            "background-color: #222222; color: white; font-size: 16pt; padding: 8px; border-radius: 5px;"
+            "background-color: #222222; color: white; font-size: 12pt; padding: 8px; border-radius: 5px;"
         )
         self.downloadModelButton.clicked.connect(self.downloadModelButtonClicked)
         leftPanel.addWidget(self.downloadModelButton)
@@ -129,19 +140,22 @@ class GUI(QMainWindow):
             self.scroll_area.verticalScrollBar().maximum()
         )
 
-    def model_selected(self):
+    #def model_selected(self):
         #Gets path to selected model
-        script_directory = os.path.dirname(os.path.abspath(__file__))
-        model_name = "openai-community-gpt2" #hardcoded selected model for now
-        model_path = os.path.join(script_directory, "models", model_name)
+        #script_directory = os.path.dirname(os.path.abspath(__file__))
+        #model_name = "openai-community-gpt2" #hardcoded selected model for now
+        #model_path = os.path.join(script_directory, "models", model_name)
 
         # Initialize the model
-        self.prompt_model = PromptModel(model_path)
+        #self.prompt_model = PromptModel(model_path)
 
     def respond_to_message(self, message): 
-        if self.prompt_model is None:
-            raise ValueError("Model not initialized. Call 'model_selected' first.")
-        response = f'{self.prompt_model.generate_response(message)}'
+        #if self.prompt_model is None:
+            #raise ValueError("Model not initialized. Call 'model_selected' first.")
+        #response = f'{self.prompt_model.generate_response(message)}'
+
+        ##DUMMY RESPONSE FOR TESTING
+        response = "Dummy Response!!"
         self.add_message(response, alignment=Qt.AlignmentFlag.AlignLeft, user=False)
 
 
