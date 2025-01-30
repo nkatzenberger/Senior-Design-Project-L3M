@@ -30,31 +30,9 @@ class GUI(QMainWindow):
         leftPanel.setContentsMargins(10, 10, 10, 10)
         leftPanel.setAlignment(Qt.AlignmentFlag.AlignTop)
         #LEFT PANEL CHAT WINDOW STUFF ################################################################################
-        #TODO: these are just examples for the side panel. can be replaced with buttons, sub layouts, whatever
-
-        #these examples need to be programmatically added as new models are installed, should adopt acronym for model names for letter contents with full model name when hovering with the mouse
-        self.exampleLabel1 = QLabel("1")
-        self.exampleLabel1.setFixedSize(50,50)
-        self.exampleLabel1.setAlignment(Qt.AlignmentFlag.AlignTop)
-        self.exampleLabel2 = QLabel("2")
-        self.exampleLabel2.setFixedSize(50,50)
-        self.exampleLabel1.setAlignment(Qt.AlignmentFlag.AlignTop)
-        self.exampleLabel3 = QLabel("3")
-        self.exampleLabel3.setFixedSize(50,50)
-        self.exampleLabel1.setAlignment(Qt.AlignmentFlag.AlignTop)
-
-        self.exampleLabel1.setStyleSheet(
-            "background-color: #c4c4c4; padding: 8px; border-radius: 25px; border: 3px solid #27F2FA; font-size: 16pt; color: black; text-align:center;"
-        )
-        self.exampleLabel2.setStyleSheet(
-            "background-color: #c4c4c4; padding: 8px; border-radius: 25px; font-size: 16pt; color: black; text-align:center;"
-        )
-        self.exampleLabel3.setStyleSheet(
-            "background-color: #c4c4c4; padding: 8px; border-radius: 25px; font-size: 16pt; color: black; text-align:center;"
-        )
-        leftPanel.addWidget(self.exampleLabel1)
-        leftPanel.addWidget(self.exampleLabel2)
-        leftPanel.addWidget(self.exampleLabel3)
+        modelDict = self.createAcronyms(self.getModelNames())
+        modelButtons = self.assembleModelIcons(modelDict)
+        leftPanel.addLayout(modelButtons)
 
         self.downloadModelButton = QPushButton("Download Model", self)
         self.downloadModelButton.setStyleSheet(
@@ -97,9 +75,64 @@ class GUI(QMainWindow):
         panelLayout.addLayout(rightPanel)
         central_widget.setLayout(panelLayout)
 
+#functions for assembling/updating the page dynamically
+
+    #takes in array of model names then returns a dictionary of acronyms with associated model names, acronyms should be 3 characters long
+        #dictionary in form of {acronym: modelName}
+    def createAcronyms(self, modelNames: list[str]):
+        #eventually this numbering logic will be replaced with real acronyms for the models
+            #as of writing we chose to put the specifics of how this will be done to be decided later
+        acronyms = {}
+        for i,name in enumerate(modelNames):
+            acronyms[i + 1] = name
+        return acronyms
+    
+    #looks inside of model directory and gets names of subfolders associated with distinct models, returns array of names
+    def getModelNames(self):
+        if not os.path.exists('./models'):
+            raise FileNotFoundError(f"The directory './models' does not exist.")
+        
+        return [name for name in os.listdir('./models') if os.path.isdir(os.path.join('./models', name))]
+    
+    #creates the icons for the left panel of the GUI based on the assembled acronyms
+    def assembleModelIcons(self, modelAcronyms: dict):
+        group = QVBoxLayout()
+        for acronym, modelName in modelAcronyms.items():
+            btn = QPushButton(str(acronym))
+            btn.clicked.connect(lambda checked, a = modelName: self.onModelSelect(a))
+
+            #button formatting
+            btn.setToolTip(modelName)
+            btn.setFixedSize(50,50)
+            #TODO need to remove border on this style after model selecting is implemented
+            btn.setStyleSheet("""
+                QPushButton{
+                    background-color: gray;
+                    border-radius: 25px;
+                    border: 2px solid #27F2FA;
+                    font-size: 14pt;
+                    font-weight:bold;
+                    color: black;   
+                    text-align:center;
+                }
+                
+                QToolTip {
+                    
+                }
+            """)
+            
+            
+
+            #add to layout
+            group.addWidget(btn)
+
+        return group
 
 
 #functions that are called with buttons etc..
+    #TODO: function that is called when user selects an installed model from the left side-panel
+    def onModelSelect(self,model:str):
+        print(model)
 
     def downloadModelButtonClicked(self):
         #QMessageBox.information(self, "Button Clicked", "You clicked the left panel button!")
@@ -166,3 +199,4 @@ if __name__ == "__main__":
     window = GUI()
     window.show()
     sys.exit(app.exec())
+
