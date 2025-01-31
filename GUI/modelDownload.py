@@ -1,6 +1,5 @@
 import os
 import requests
-import json
 from dotenv import load_dotenv
 from transformers import AutoModel, AutoTokenizer, AutoConfig
 from PyQt6.QtWidgets import *
@@ -36,13 +35,20 @@ class DownloadModelWidget(QDialog):
     def __init__(self, parent=None):
         super().__init__(parent)
 
-        #Get list of models
+        #Load API Token
+        load_dotenv()
+        self.API_TOKEN = os.getenv('HUGGING_FACE_API_TOKEN')
+        if not self.API_TOKEN:
+            raise EnvironmentError('API token not found')
+        
+        #Initialize variables
+        self.query = None
         self.model_ids = self.modelsAPI()
 
         # Set up the subwindow
         self.setWindowTitle("Download Model")
         self.setWindowFlags(Qt.WindowType.FramelessWindowHint | Qt.WindowType.WindowStaysOnTopHint)
-        self.setGeometry(300, 200, 300, 150)
+        self.setGeometry(400, 267, 400, 200)
 
         self.setStyleSheet("""
             QDialog {
@@ -67,8 +73,13 @@ class DownloadModelWidget(QDialog):
             }
         """)
 
-        # Add content to the floating dialog
         layout = QVBoxLayout()
+
+        # Search input field
+        self.search_input = QLineEdit(self)
+        self.search_input.setPlaceholderText("Enter search query...")
+        self.search_input.returnPressed.connect(self.searchForModel)
+        layout.addWidget(self.search_input)
 
 
         # List Widget
@@ -87,8 +98,8 @@ class DownloadModelWidget(QDialog):
         if parent:
             parent.installEventFilter(self)
 
+    #Close the dialog if the user clicks outside.
     def eventFilter(self, source, event):
-        #Close the dialog if the user clicks outside.
         if event.type() == QEvent.Type.MouseButtonPress:
             if not self.geometry().contains(event.globalPosition().toPoint()):
                 self.close()
@@ -104,42 +115,41 @@ class DownloadModelWidget(QDialog):
         else:
             print("No model selected!")
     
-    #API Call to get and list models available for download
-    def modelsAPI(self, sort_by=None):
-        #valid sort keys are "likes", "downloads", "id", "trendingScore"
+    def searchForModel(self):
+        self.query = self.search_input.text().strip()
+        if not self.query:
+            return
+        self.model_ids = self.modelsAPI()
+        self.model_list.clear()
+        self.model_list.addItems(self.model_ids)
 
-        #Load API Token
-        load_dotenv()
-        API_TOKEN = os.getenv('HUGGING_FACE_API_TOKEN')
-        if not API_TOKEN:
-            print("Error: API Token not found!")
-            return []
-        
-        #API Call
+    
+    #API Call to get and list models available for download
+    def modelsAPI(self, sort_by=None): #valid sort keys are "likes", "downloads", "id", "trendingScore"
         headers = {
-            'Authorization': f'Bearer {API_TOKEN}',
+            'Authorization': f'Bearer {self.API_TOKEN}',
             'Content-Type': 'application/json'
         }
-        response = requests.get('https://huggingface.co/api/models', headers=headers)
 
-        if response.status_code == 200:
+        url = f'https://huggingface.co/api/models?search={self.query}' if self.query else 'https://huggingface.co/api/models'
+        try:
+            response = requests.get(url, headers=headers, timeout=5)
+            response.raise_for_status()
             data = response.json()
 
-            #Only returns text-generation models
+            # Only return text-generation models
             text_gen_models = [model for model in data if model.get("pipeline_tag") == "text-generation"]
-            if not text_gen_models:
-                print("No text-generation models found.")
-                return []
 
-            #Sorts models by sort_by
-            if sort_by:
-                text_gen_models = sorted(text_gen_models, key=lambda x: x.get(sort_by, 0), reverse=True)
-            
-            #Returns 1st 30 models
-            return [model["id"] for model in text_gen_models[:30]]
-        else:
-            print(f'Error: {response.status_code}' - {response.text})
-            return []
-
+            if text_gen_models:
+                model_names = [model["id"] for model in text_gen_models[:30]]  # First 30 models
+            else:
+                model_names = ["No text-generation models found."]
+        except requests.exceptions.Timeout:
+            model_names = ["Error: Request timed out."]
+        except requests.exceptions.RequestException as e:
+            model_names = [f"Error: {str(e)}"]
+        except Exception:
+            model_names = ["Error: Failed to fetch data."]
+        return model_names
         
     
