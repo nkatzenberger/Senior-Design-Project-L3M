@@ -1,7 +1,7 @@
 import sys
 import os
 from PyQt6.QtWidgets import *
-from PyQt6.QtCore import Qt, QEvent  # Import Qt for alignment flags
+from PyQt6.QtCore import Qt, QEvent   # Import Qt for alignment flags
 from PyQt6.QtGui import QTextCursor
 from modelPrompt import PromptModel
 from modelDownload import DownloadModelWidget
@@ -12,7 +12,7 @@ class GUI(QMainWindow):
 
         # Initialize Model
         self.prompt_model = None
-        #self.model_selected()  
+        self.model_selected("openai-community-gpt2")  
 
         # Set up the window
         self.setWindowTitle("L3M GUI")
@@ -23,24 +23,30 @@ class GUI(QMainWindow):
         self.setCentralWidget(central_widget)
 
         panelLayout = QHBoxLayout() #overall layout
-        leftPanel = QVBoxLayout() #everything at the left
+        self.leftPanel = QVBoxLayout() #everything at the left
         rightPanel = QVBoxLayout() #everything at the right
 
-        leftPanel.setSpacing(10)
-        leftPanel.setContentsMargins(10, 10, 10, 10)
-        leftPanel.setAlignment(Qt.AlignmentFlag.AlignTop)
+        self.leftPanel.setSpacing(10)
+        self.leftPanel.setContentsMargins(10, 10, 10, 10)
+        self.leftPanel.setAlignment(Qt.AlignmentFlag.AlignTop)
         #LEFT PANEL CHAT WINDOW STUFF ################################################################################
         modelDict = self.createAcronyms(self.getModelNames())
         modelButtons = self.assembleModelIcons(modelDict)
-        leftPanel.addLayout(modelButtons)
+        self.leftPanel.addLayout(modelButtons)
 
         self.downloadModelButton = QPushButton("Download Model", self)
         self.downloadModelButton.setStyleSheet(
             "background-color: #222222; color: white; font-size: 12pt; padding: 8px; border-radius: 5px;"
         )
         self.downloadModelButton.clicked.connect(self.downloadModelButtonClicked)
-        leftPanel.addWidget(self.downloadModelButton)
-
+        self.leftPanel.addWidget(self.downloadModelButton)
+        
+        self.refreshModelsButton = QPushButton("Refresh Model List", self)
+        self.refreshModelsButton.setStyleSheet(
+            "background-color: #220000; color: white; font-size: 12pt; padding: 8px; border-radius: 5px;"
+        )
+        self.refreshModelsButton.clicked.connect(self.update_left_panel)
+        self.leftPanel.addWidget(self.refreshModelsButton)
 
 
         #RIGHT PANEL CHAT WINDOW STUFF ################################################################################
@@ -71,7 +77,7 @@ class GUI(QMainWindow):
         rightPanel.addLayout(input_layout)
 
         # add layouts to central panel layout and add to main widget
-        panelLayout.addLayout(leftPanel)
+        panelLayout.addLayout(self.leftPanel)
         panelLayout.addLayout(rightPanel)
         central_widget.setLayout(panelLayout)
 
@@ -100,9 +106,10 @@ class GUI(QMainWindow):
         for acronym, modelName in modelAcronyms.items():
             btn = QPushButton(str(acronym))
             btn.clicked.connect(lambda checked, a = modelName: self.onModelSelect(a))
-
+            #btn.clicked.connect(lambda checked: self.change_color("cyan")) # trying to change color when clicked
             #button formatting
             btn.setToolTip(modelName)
+            #btn.setText(acronym)
             btn.setFixedSize(50,50)
             #TODO need to remove border on this style after model selecting is implemented
             btn.setStyleSheet("""
@@ -132,12 +139,44 @@ class GUI(QMainWindow):
 #functions that are called with buttons etc..
     #TODO: function that is called when user selects an installed model from the left side-panel
     def onModelSelect(self,model:str):
-        print(model)
+        print(model) 
+        self.model_selected(model)
+
+    def change_color(self, color): #Supposed to be for model buttons, Work in progress
+        self.setStyleSheet(f"""QPushButton{{
+                    background-color: {color};}}""")
 
     def downloadModelButtonClicked(self):
         #QMessageBox.information(self, "Button Clicked", "You clicked the left panel button!")
         self.download_model_widget = DownloadModelWidget(self)
         self.download_model_widget.show()
+    
+    def clear_layout(self, layout):
+        while layout.count():
+            child = layout.takeAt(0)
+            widget = child.widget()
+        if child.widget():
+            child.widget().setParent(None)
+            child.widget().deleteLater()
+        elif child.layout() is not None:
+            self.clear_layout(child.layout())
+
+    def update_left_panel(self):
+        while self.leftPanel.count() > 2:
+            child = self.leftPanel.takeAt(0)
+            if child.widget():
+                child.widget().setParent(None)
+                child.widget().deleteLater()
+            elif child.layout():
+                self.clear_layout(child.layout())
+
+        self.leftPanel.update()
+        # Refresh the model buttons
+        modelDict = self.createAcronyms(self.getModelNames())
+        modelButtons = self.assembleModelIcons(modelDict)
+        self.leftPanel.insertLayout(0, modelButtons) 
+        self.leftPanel.update()
+        self.centralWidget().update()
 
     #function that captures user text input
     def send_message(self):
@@ -173,22 +212,21 @@ class GUI(QMainWindow):
             self.scroll_area.verticalScrollBar().maximum()
         )
 
-    #def model_selected(self):
+    def model_selected(self, model_name):
         #Gets path to selected model
-        #script_directory = os.path.dirname(os.path.abspath(__file__))
-        #model_name = "openai-community-gpt2" #hardcoded selected model for now
-        #model_path = os.path.join(script_directory, "models", model_name)
+        script_directory = os.path.dirname(os.path.abspath(__file__))
+        model_path = os.path.join(script_directory, "models", model_name)
 
         # Initialize the model
-        #self.prompt_model = PromptModel(model_path)
+        self.prompt_model = PromptModel(model_path)
 
     def respond_to_message(self, message): 
-        #if self.prompt_model is None:
-            #raise ValueError("Model not initialized. Call 'model_selected' first.")
-        #response = f'{self.prompt_model.generate_response(message)}'
+        if self.prompt_model is None:
+            raise ValueError("Model not initialized. Call 'model_selected' first.")
+        response = f'{self.prompt_model.generate_response(message)}'
 
         ##DUMMY RESPONSE FOR TESTING
-        response = "Dummy Response!!"
+       # response = "Dummy Response!!"
         self.add_message(response, alignment=Qt.AlignmentFlag.AlignLeft, user=False)
 
 
