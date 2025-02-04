@@ -2,5 +2,6 @@
 /.vscode
 /myenv
 /webServer/backend/__pycache__
-/GUI/models
-/GUI/__pycache__
+/app/models
+/app/__pycache__
+/app/.env
