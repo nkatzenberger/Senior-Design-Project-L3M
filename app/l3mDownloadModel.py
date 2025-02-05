@@ -25,7 +25,7 @@ class DownloadModel(QThread):
                 return
             
             # Download the model, tokenizer, and config
-            model = AutoModel.from_pretrained(
+            AutoModel.from_pretrained(
                 self.model_name, 
                 cache_dir=self.model_folder,
                 low_cpu_mem_usage=True, # Prevents entire model being loaded into ram
