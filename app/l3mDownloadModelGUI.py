@@ -1,6 +1,6 @@
 import os
 from PyQt6.QtWidgets import *
-from PyQt6.QtCore import Qt, QEvent
+from PyQt6.QtCore import Qt, QEvent, QThreadPool
 from l3mDownloadModel import DownloadModel
 from l3mHuggingFaceModelsAPI import HuggingFaceModelsAPI
 
@@ -35,11 +35,11 @@ class DownloadModelGUI(QDialog):
 
         if parent:
             parent.installEventFilter(self)
-        self.query = None 
-        self.api_thread = None
+        self.query = None
         self.download_model_thread = None
         self.setupUi()
-        self.startThread()
+        self.pool = QThreadPool.globalInstance()
+        self.searchForModel()
 
     def setupUi(self):
         layout = QVBoxLayout()
@@ -56,33 +56,18 @@ class DownloadModelGUI(QDialog):
         layout.addWidget(download_button)
         self.setLayout(layout)
 
-    #Starts Thread and connects responses to updateModelList
-    def startThread(self):
-        if not self.api_thread: 
-            self.api_thread = HuggingFaceModelsAPI()
-            self.api_thread.dataFetched.connect(self.updateModelList)
-            self.api_thread.start()
-            self.api_thread.triggerFetch.emit(None)
-
     #Triggers API to run on thread
     def searchForModel(self):
         self.query = self.search_input.text().strip()
-        if not self.query:
-            return
-        self.api_thread.triggerFetch.emit(self.query)
+        # Start QRunnable and set signal listener to update when response comes back
+        self.search = HuggingFaceModelsAPI(self.query)
+        self.search.signals.result.connect(self.updateModelList)
+        self.pool.start(self.search)
 
     #Updates list everytime thread emits the API is done
     def updateModelList(self, model_ids):
         self.model_list.clear()
         self.model_list.addItems(model_ids)
-    
-    #Closes thread when GUI is closed
-    def closeEvent(self, event): 
-        if self.api_thread and self.api_thread.isRunning():
-            self.api_thread.stop()
-            self.api_thread.wait()
-        event.accept()
-        print("API Thread Safely Stopped")
 
     #Allow users to select model from the list and install them
     def downloadSelectedModel(self):

@@ -1,9 +1,10 @@
 import sys
 import os
 from PyQt6.QtWidgets import *
-from PyQt6.QtCore import Qt, QEvent
+from PyQt6.QtCore import Qt, QEvent, QThreadPool
 from PyQt6.QtGui import QTextCursor
 from typing import Optional
+from transformers import AutoModelForCausalLM, AutoTokenizer
 from l3mPromptModel import PromptModel
 from l3mDownloadModelGUI import DownloadModelGUI
 
@@ -13,7 +14,8 @@ class GUI(QMainWindow):
 
         # Initialize Model
         self.prompt_model = None
-        #self.model_selected()  
+        self.pool = QThreadPool.globalInstance()
+        self.model_selected()  
 
         # Set up the window
         self.setWindowTitle("L3M GUI")
@@ -148,14 +150,6 @@ class GUI(QMainWindow):
         self.download_model_widget = DownloadModelGUI(self)
         self.download_model_widget.show()
 
-    #function that captures user text input
-    def send_message(self):
-        user_message = self.input_field.text().strip()
-        if user_message:
-            self.add_message(user_message, alignment=Qt.AlignmentFlag.AlignRight, user=True)
-            self.respond_to_message(user_message) #THIS IS WHERE USER QUERRY GETS SENT TO MODEL
-            self.input_field.clear()
-
     #Function for adding a new message in chat window
     def add_message(self, message, alignment, user=False):
         message_label = QLabel(message)
@@ -187,18 +181,24 @@ class GUI(QMainWindow):
         script_directory = os.path.dirname(os.path.abspath(__file__))
         model_name = "openai-community-gpt2" #hardcoded selected model for now
         model_path = os.path.join(script_directory, "models", model_name)
+        #Initialize selected model
+        self.tokenizer = AutoTokenizer.from_pretrained(model_path)
+        self.model = AutoModelForCausalLM.from_pretrained(model_path)
 
-        # Initialize the model
-        self.prompt_model = PromptModel(model_path)
+    #function that captures user text input
+    def send_message(self):
+        user_message = self.input_field.text().strip()
+        if user_message:
+            self.add_message(user_message, alignment=Qt.AlignmentFlag.AlignRight, user=True)
+            prompt_model = PromptModel(user_message, self.tokenizer, self.model)
+            prompt_model.signals.result.connect(self.respond_to_message)
+            self.pool.start(prompt_model) #THIS IS WHERE USER QUERRY GETS SENT TO MODEL
+            self.input_field.clear()
 
     def respond_to_message(self, message): 
-        #if self.prompt_model is None:
-            #raise ValueError("Model not initialized. Call 'model_selected' first.")
-        #response = f'{self.prompt_model.generate_response(message)}'
-
         ##DUMMY RESPONSE FOR TESTING
-        response = "Dummy Response!!"
-        self.add_message(response, alignment=Qt.AlignmentFlag.AlignLeft, user=False)
+        #message = "Dummy Response!!"
+        self.add_message(message, alignment=Qt.AlignmentFlag.AlignLeft, user=False)
 
     def onModelDownloadComplete(self, success: bool, error: Optional[dict] = None):
         if success: # Refresh list of available models
@@ -207,7 +207,7 @@ class GUI(QMainWindow):
             QMessageBox.warning(
                 self, 
                 "Download Failed", 
-                f"Code: {error.get('code', 'N/A')}\nKind: {error.get('kind', 'Unknown Error')}\nMessage: {error.get('message', 'No details')}"
+                f"Code: {error.get('code', 'N/A')}\nKind: {error.get('kind', 'Unknown Error')}\nDetails: {error.get('message', 'No details')}"
             )
     
     def refreshModelList(self):
@@ -220,20 +220,6 @@ class GUI(QMainWindow):
             if item.widget():
                 item.widget().deleteLater()
         self.modelButtonLayout.addLayout(modelButtons)
-
-    #Handles application closing with model downloading
-    def closeEvent(self, event):
-        if hasattr(self, 'download_model_thread') and self.download_model_thread.isRunning():
-            reply = QMessageBox.question(
-                self, "Exit", "A model download is in progress. Are you sure you want to exit?",
-                QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No, QMessageBox.StandardButton.No
-            )
-            if reply == QMessageBox.StandardButton.No:
-                event.ignore()
-                return
-            self.download_model_thread.stop()  # Stop download if the user confirms exit
-            self.download_model_thread.wait()
-        event.accept()
 
 
 

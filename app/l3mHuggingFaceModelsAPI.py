@@ -1,24 +1,24 @@
 import os
 import requests
-from PyQt6.QtCore import QThread, pyqtSignal, pyqtSlot
+from PyQt6.QtCore import QRunnable, QObject, pyqtSignal
 from dotenv import load_dotenv
 
-class HuggingFaceModelsAPI(QThread):
-    dataFetched = pyqtSignal(list)
-    triggerFetch = pyqtSignal(str)
+class WorkerSignals(QObject):
+    result = pyqtSignal(list)
 
-    def __init__(self):
+class HuggingFaceModelsAPI(QRunnable):
+    def __init__(self, query):
         super(HuggingFaceModelsAPI, self).__init__()
         load_dotenv()
         self._is_running = True
         self.API_TOKEN = os.getenv('HUGGING_FACE_API_TOKEN')
         if not self.API_TOKEN:
             raise EnvironmentError('API token not found')
-        self.triggerFetch.connect(self.fetchData)
-        
-    @pyqtSlot(str)
-    def fetchData(self, query):
         self.query = query
+        self.signals = WorkerSignals()
+        
+    
+    def run(self):
         headers = {
             'Authorization': f'Bearer {self.API_TOKEN}',
             'Content-Type': 'application/json'
@@ -43,11 +43,6 @@ class HuggingFaceModelsAPI(QThread):
             model_names = [f"Error: {str(e)}"]
         except Exception:
             model_names = ["Error: Failed to fetch data."]
-        self.dataFetched.emit(model_names)
     
-    def run(self):
-        while self._is_running:
-            self.sleep(1)
-
-    def stop(self):
-        self._is_running = False
+    # Signal to the DownloadModelGUI that the API is done
+        self.signals.result.emit(model_names)
