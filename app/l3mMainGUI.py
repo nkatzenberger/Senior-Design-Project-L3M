@@ -1,10 +1,10 @@
 import sys
 import os
 from PyQt6.QtWidgets import *
-from PyQt6.QtCore import Qt, QEvent  # Import Qt for alignment flags
+from PyQt6.QtCore import Qt, QEvent
 from PyQt6.QtGui import QTextCursor
-from modelPrompt import PromptModel
-from modelDownload import DownloadModelWidget
+from l3mPromptModel import PromptModel
+from l3mDownloadModelGUI import DownloadModelGUI
 
 class GUI(QMainWindow):
     def __init__(self):
@@ -136,7 +136,7 @@ class GUI(QMainWindow):
 
     def downloadModelButtonClicked(self):
         #QMessageBox.information(self, "Button Clicked", "You clicked the left panel button!")
-        self.download_model_widget = DownloadModelWidget(self)
+        self.download_model_widget = DownloadModelGUI(self)
         self.download_model_widget.show()
 
     #function that captures user text input
