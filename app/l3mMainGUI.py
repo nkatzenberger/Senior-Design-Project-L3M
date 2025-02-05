@@ -182,14 +182,14 @@ class GUI(QMainWindow):
             self.scroll_area.verticalScrollBar().maximum()
         )
 
-    #def model_selected(self):
-        #Gets path to selected model
-        #script_directory = os.path.dirname(os.path.abspath(__file__))
-        #model_name = "openai-community-gpt2" #hardcoded selected model for now
-        #model_path = os.path.join(script_directory, "models", model_name)
+    def model_selected(self):
+        # Gets path to selected model
+        script_directory = os.path.dirname(os.path.abspath(__file__))
+        model_name = "openai-community-gpt2" #hardcoded selected model for now
+        model_path = os.path.join(script_directory, "models", model_name)
 
         # Initialize the model
-        #self.prompt_model = PromptModel(model_path)
+        self.prompt_model = PromptModel(model_path)
 
     def respond_to_message(self, message): 
         #if self.prompt_model is None:

@@ -27,10 +27,25 @@ class DownloadModel(QThread):
             # Download the model, tokenizer, and config
             AutoModel.from_pretrained(
                 self.model_name, 
-                cache_dir=self.model_folder,
                 low_cpu_mem_usage=True, # Prevents entire model being loaded into ram
                 device_map="auto"  # Automatically offloads model parts to disk if needed
             )
+
+            if not self._is_running: # Stop after download
+                return
+            
+            # Download the model, tokenizer, and config
+            model = AutoModel.from_pretrained(self.model_name)
+            tokenizer = AutoTokenizer.from_pretrained(self.model_name)
+            config = AutoConfig.from_pretrained(self.model_name)
+
+            if not self._is_running: # Stop before saving
+                return
+            
+            #Save the model, tokenizer, and config
+            model.save_pretrained(self.model_folder)
+            tokenizer.save_pretrained(self.model_folder)
+            config.save_pretrained(self.model_folder)
             
             print(f"Model {self.model_name} successfully downloaded and saved in {self.model_folder}.")
 
