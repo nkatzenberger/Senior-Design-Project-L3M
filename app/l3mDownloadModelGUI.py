@@ -37,6 +37,7 @@ class DownloadModelGUI(QDialog):
             parent.installEventFilter(self)
         self.query = None 
         self.api_thread = None
+        self.download_model_thread = None
         self.setupUi()
         self.startThread()
 
@@ -51,7 +52,7 @@ class DownloadModelGUI(QDialog):
         layout.addWidget(self.model_list)
 
         download_button = QPushButton("Download")
-        download_button.clicked.connect(self.download_selected_model)
+        download_button.clicked.connect(self.downloadSelectedModel)
         layout.addWidget(download_button)
         self.setLayout(layout)
 
@@ -81,14 +82,22 @@ class DownloadModelGUI(QDialog):
             self.api_thread.stop()
             self.api_thread.wait()
         event.accept()
-        print("API Thread terminated")
+        print("API Thread Safely Stopped")
 
     #Allow users to select model from the list and install them
-    def download_selected_model(self):
+    def downloadSelectedModel(self):
         selected_items = self.model_list.selectedItems()
         if selected_items:
             selected_model = selected_items[0].text()
-            DownloadModel(selected_model)
+            self.download_model_thread = DownloadModel(selected_model)
+            if self.parent():
+                self.download_model_thread.model_download_complete.connect(self.parent().onModelDownloadComplete)
+            self.download_model_thread.start()
+            #TODO:
+            #disable button
+            #update button to say downloading...
+            #wait 2 seconds
+            #self.close()
         else:
             print("No model selected!")
 

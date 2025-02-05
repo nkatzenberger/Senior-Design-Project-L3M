@@ -3,6 +3,7 @@ import os
 from PyQt6.QtWidgets import *
 from PyQt6.QtCore import Qt, QEvent
 from PyQt6.QtGui import QTextCursor
+from typing import Optional
 from l3mPromptModel import PromptModel
 from l3mDownloadModelGUI import DownloadModelGUI
 
@@ -23,23 +24,31 @@ class GUI(QMainWindow):
         self.setCentralWidget(central_widget)
 
         panelLayout = QHBoxLayout() #overall layout
-        leftPanel = QVBoxLayout() #everything at the left
-        rightPanel = QVBoxLayout() #everything at the right
+        self.leftPanel = QVBoxLayout() #everything at the left
+        self.rightPanel = QVBoxLayout() #everything at the right
 
-        leftPanel.setSpacing(10)
-        leftPanel.setContentsMargins(10, 10, 10, 10)
-        leftPanel.setAlignment(Qt.AlignmentFlag.AlignTop)
+        self.leftPanel.setSpacing(10)
+        self.leftPanel.setContentsMargins(10, 10, 10, 10)
+        self.leftPanel.setAlignment(Qt.AlignmentFlag.AlignTop)
+
+
         #LEFT PANEL CHAT WINDOW STUFF ################################################################################
+
+        # Create a layout specifically for the dynamically generated model buttons
+        self.modelButtonLayout = QVBoxLayout()
+        self.modelButtonLayout.setAlignment(Qt.AlignmentFlag.AlignHCenter)
+        self.leftPanel.addLayout(self.modelButtonLayout)
+
         modelDict = self.createAcronyms(self.getModelNames())
         modelButtons = self.assembleModelIcons(modelDict)
-        leftPanel.addLayout(modelButtons)
+        self.modelButtonLayout.addLayout(modelButtons)
 
         self.downloadModelButton = QPushButton("Download Model", self)
         self.downloadModelButton.setStyleSheet(
             "background-color: #222222; color: white; font-size: 12pt; padding: 8px; border-radius: 5px;"
         )
         self.downloadModelButton.clicked.connect(self.downloadModelButtonClicked)
-        leftPanel.addWidget(self.downloadModelButton)
+        self.leftPanel.addWidget(self.downloadModelButton)
 
 
 
@@ -54,7 +63,7 @@ class GUI(QMainWindow):
         self.chat_container.setLayout(self.chat_layout)
 
         self.scroll_area.setWidget(self.chat_container)
-        rightPanel.addWidget(self.scroll_area)
+        self.rightPanel.addWidget(self.scroll_area)
 
         # Input area
         input_layout = QHBoxLayout()
@@ -68,11 +77,11 @@ class GUI(QMainWindow):
         input_layout.addWidget(send_button)
 
         #add the chat layout to the right panel
-        rightPanel.addLayout(input_layout)
+        self.rightPanel.addLayout(input_layout)
 
         # add layouts to central panel layout and add to main widget
-        panelLayout.addLayout(leftPanel)
-        panelLayout.addLayout(rightPanel)
+        panelLayout.addLayout(self.leftPanel)
+        panelLayout.addLayout(self.rightPanel)
         central_widget.setLayout(panelLayout)
 
 #functions for assembling/updating the page dynamically
@@ -190,6 +199,41 @@ class GUI(QMainWindow):
         ##DUMMY RESPONSE FOR TESTING
         response = "Dummy Response!!"
         self.add_message(response, alignment=Qt.AlignmentFlag.AlignLeft, user=False)
+
+    def onModelDownloadComplete(self, success: bool, error: Optional[dict] = None):
+        if success: # Refresh list of available models
+            self.refreshModelList()  
+        else: # Display error
+            QMessageBox.warning(
+                self, 
+                "Download Failed", 
+                f"Code: {error.get('code', 'N/A')}\nKind: {error.get('kind', 'Unknown Error')}\nMessage: {error.get('message', 'No details')}"
+            )
+    
+    def refreshModelList(self):
+        modelDict = self.createAcronyms(self.getModelNames())  # Refresh model list
+        modelButtons = self.assembleModelIcons(modelDict)
+        
+        # Clear the old model buttons and update the left panel
+        while self.modelButtonLayout.count():
+            item = self.modelButtonLayout.takeAt(0)  # Get the first item
+            if item.widget():
+                item.widget().deleteLater()
+        self.modelButtonLayout.addLayout(modelButtons)
+
+    #Handles application closing with model downloading
+    def closeEvent(self, event):
+        if hasattr(self, 'download_model_thread') and self.download_model_thread.isRunning():
+            reply = QMessageBox.question(
+                self, "Exit", "A model download is in progress. Are you sure you want to exit?",
+                QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No, QMessageBox.StandardButton.No
+            )
+            if reply == QMessageBox.StandardButton.No:
+                event.ignore()
+                return
+            self.download_model_thread.stop()  # Stop download if the user confirms exit
+            self.download_model_thread.wait()
+        event.accept()
 
 
 
