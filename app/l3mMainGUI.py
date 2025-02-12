@@ -16,7 +16,7 @@ class GUI(QMainWindow):
         # Initialize Model
         self.prompt_model = None
         self.pool = QThreadPool.globalInstance()
-        self.model_selected()  
+        self.model_selected("openai-community-gpt2")  
 
         # Set up the window
         self.setWindowTitle("L3M GUI")
@@ -89,7 +89,7 @@ class GUI(QMainWindow):
     def model_selected(self):
         # Gets path to selected model
         script_directory = os.path.dirname(os.path.abspath(__file__))
-        model_name = "openai-community-gpt2" #hardcoded selected model for now
+       # model_name = "openai-community-gpt2" #hardcoded selected model for now
         model_path = os.path.join(script_directory, "models", model_name)
         #Initialize selected model
         self.tokenizer = AutoTokenizer.from_pretrained(model_path)
@@ -107,4 +107,5 @@ if __name__ == "__main__":
     window = GUI()
     window.show()
     sys.exit(app.exec())
+
 
