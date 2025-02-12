@@ -7,6 +7,7 @@ from typing import Optional
 from transformers import AutoModelForCausalLM, AutoTokenizer
 from l3mPromptModel import PromptModel
 from l3mDownloadModelGUI import DownloadModelGUI
+from l3mModelPanel import ModelPanel
 
 class GUI(QMainWindow):
     def __init__(self):
@@ -41,18 +42,10 @@ class GUI(QMainWindow):
         self.modelButtonLayout.setAlignment(Qt.AlignmentFlag.AlignHCenter)
         self.leftPanel.addLayout(self.modelButtonLayout)
 
-        modelDict = self.createAcronyms(self.getModelNames())
-        modelButtons = self.assembleModelIcons(modelDict)
-        self.modelButtonLayout.addLayout(modelButtons)
+        for i in ModelPanel.modelButtons:
+            self.modelButtonLayout.addWidget(ModelPanel.modelButtons[i])
 
-        self.downloadModelButton = QPushButton("Download Model", self)
-        self.downloadModelButton.setStyleSheet(
-            "background-color: #222222; color: white; font-size: 12pt; padding: 8px; border-radius: 5px;"
-        )
-        self.downloadModelButton.clicked.connect(self.downloadModelButtonClicked)
-        self.leftPanel.addWidget(self.downloadModelButton)
-
-
+        self.leftPanel.addWidget(ModelPanel.downloadModelButton)
 
         #RIGHT PANEL CHAT WINDOW STUFF ################################################################################
         # Scrollable chat area
@@ -86,95 +79,12 @@ class GUI(QMainWindow):
         panelLayout.addLayout(self.rightPanel)
         central_widget.setLayout(panelLayout)
 
-#functions for assembling/updating the page dynamically
-
-    #takes in array of model names then returns a dictionary of acronyms with associated model names, acronyms should be 3 characters long
-        #dictionary in form of {acronym: modelName}
-    def createAcronyms(self, modelNames: list[str]):
-        #eventually this numbering logic will be replaced with real acronyms for the models
-            #as of writing we chose to put the specifics of how this will be done to be decided later
-        acronyms = {}
-        for i,name in enumerate(modelNames):
-            acronyms[i + 1] = name
-        return acronyms
-    
-    #looks inside of model directory and gets names of subfolders associated with distinct models, returns array of names
-    def getModelNames(self):
-        if not os.path.exists('./models'):
-            raise FileNotFoundError(f"The directory './models' does not exist.")
-        
-        return [name for name in os.listdir('./models') if os.path.isdir(os.path.join('./models', name))]
-    
-    #creates the icons for the left panel of the GUI based on the assembled acronyms
-    def assembleModelIcons(self, modelAcronyms: dict):
-        group = QVBoxLayout()
-        for acronym, modelName in modelAcronyms.items():
-            btn = QPushButton(str(acronym))
-            btn.clicked.connect(lambda checked, a = modelName: self.onModelSelect(a))
-
-            #button formatting
-            btn.setToolTip(modelName)
-            btn.setFixedSize(50,50)
-            #TODO need to remove border on this style after model selecting is implemented
-            btn.setStyleSheet("""
-                QPushButton{
-                    background-color: gray;
-                    border-radius: 25px;
-                    border: 2px solid #27F2FA;
-                    font-size: 14pt;
-                    font-weight:bold;
-                    color: black;   
-                    text-align:center;
-                }
-                
-                QToolTip {
-                    
-                }
-            """)
-            
-            
-
-            #add to layout
-            group.addWidget(btn)
-
-        return group
-
 
 #functions that are called with buttons etc..
-    #TODO: function that is called when user selects an installed model from the left side-panel
-    def onModelSelect(self,model:str):
-        print(model)
+    
 
-    def downloadModelButtonClicked(self):
-        #QMessageBox.information(self, "Button Clicked", "You clicked the left panel button!")
-        self.download_model_widget = DownloadModelGUI(self)
-        self.download_model_widget.show()
 
     #Function for adding a new message in chat window
-    def add_message(self, message, alignment, user=False):
-        message_label = QLabel(message)
-        message_label.setWordWrap(True)
-        message_label.setStyleSheet(
-            "background-color: #e1f5fe; padding: 8px; border-radius: 5px; font-size: 16pt; color: black;" if user else
-            "background-color: #c8e6c9; padding: 8px; border-radius: 5px; font-size: 16pt; color: black;"
-        )
-
-        message_layout = QHBoxLayout()
-        if alignment == Qt.AlignmentFlag.AlignRight:
-            message_layout.addStretch()
-            message_layout.addWidget(message_label)
-        else:
-            message_layout.addWidget(message_label)
-            message_layout.addStretch()
-
-        message_container = QFrame()
-        message_container.setLayout(message_layout)
-
-        self.chat_layout.addWidget(message_container)
-        self.chat_container.adjustSize()
-        self.scroll_area.verticalScrollBar().setValue(
-            self.scroll_area.verticalScrollBar().maximum()
-        )
 
     def model_selected(self):
         # Gets path to selected model
@@ -185,41 +95,9 @@ class GUI(QMainWindow):
         self.tokenizer = AutoTokenizer.from_pretrained(model_path)
         self.model = AutoModelForCausalLM.from_pretrained(model_path)
 
-    #function that captures user text input
-    def send_message(self):
-        user_message = self.input_field.text().strip()
-        if user_message:
-            self.add_message(user_message, alignment=Qt.AlignmentFlag.AlignRight, user=True)
-            prompt_model = PromptModel(user_message, self.tokenizer, self.model)
-            prompt_model.signals.result.connect(self.respond_to_message)
-            self.pool.start(prompt_model) #THIS IS WHERE USER QUERRY GETS SENT TO MODEL
-            self.input_field.clear()
 
-    def respond_to_message(self, message): 
-        ##DUMMY RESPONSE FOR TESTING
-        #message = "Dummy Response!!"
-        self.add_message(message, alignment=Qt.AlignmentFlag.AlignLeft, user=False)
 
-    def onModelDownloadComplete(self, success: bool, error: Optional[dict] = None):
-        if success: # Refresh list of available models
-            self.refreshModelList()  
-        else: # Display error
-            QMessageBox.warning(
-                self, 
-                "Download Failed", 
-                f"Code: {error.get('code', 'N/A')}\nKind: {error.get('kind', 'Unknown Error')}\nDetails: {error.get('message', 'No details')}"
-            )
     
-    def refreshModelList(self):
-        modelDict = self.createAcronyms(self.getModelNames())  # Refresh model list
-        modelButtons = self.assembleModelIcons(modelDict)
-        
-        # Clear the old model buttons and update the left panel
-        while self.modelButtonLayout.count():
-            item = self.modelButtonLayout.takeAt(0)  # Get the first item
-            if item.widget():
-                item.widget().deleteLater()
-        self.modelButtonLayout.addLayout(modelButtons)
 
 
 

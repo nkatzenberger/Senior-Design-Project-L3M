@@ -1,4 +1,5 @@
 import os
+from l3mModelPanel import ModelPanel
 from PyQt6.QtWidgets import *
 from PyQt6.QtCore import Qt, QEvent, QThreadPool
 from l3mDownloadModel import DownloadModel
@@ -76,7 +77,7 @@ class DownloadModelGUI(QDialog):
             selected_model = selected_items[0].text()
             self.download_model_thread = DownloadModel(selected_model)
             if self.parent():
-                self.download_model_thread.model_download_complete.connect(self.parent().onModelDownloadComplete)
+                self.download_model_thread.model_download_complete.connect(ModelPanel.onModelDownloadComplete)
             self.download_model_thread.start()
             #TODO:
             #disable button
