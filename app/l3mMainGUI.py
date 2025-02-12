@@ -15,7 +15,7 @@ class GUI(QMainWindow):
         # Initialize Model
         self.prompt_model = None
         self.pool = QThreadPool.globalInstance()
-        self.model_selected()  
+        self.model_selected("openai-community-gpt2")  
 
         # Set up the window
         self.setWindowTitle("L3M GUI")
@@ -143,6 +143,7 @@ class GUI(QMainWindow):
 #functions that are called with buttons etc..
     #TODO: function that is called when user selects an installed model from the left side-panel
     def onModelSelect(self,model:str):
+        self.model_selected(model)
         print(model)
 
     def downloadModelButtonClicked(self):
@@ -176,10 +177,10 @@ class GUI(QMainWindow):
             self.scroll_area.verticalScrollBar().maximum()
         )
 
-    def model_selected(self):
+    def model_selected(self, model_name):
         # Gets path to selected model
         script_directory = os.path.dirname(os.path.abspath(__file__))
-        model_name = "openai-community-gpt2" #hardcoded selected model for now
+       # model_name = "openai-community-gpt2" #hardcoded selected model for now
         model_path = os.path.join(script_directory, "models", model_name)
         #Initialize selected model
         self.tokenizer = AutoTokenizer.from_pretrained(model_path)
@@ -215,11 +216,11 @@ class GUI(QMainWindow):
         modelButtons = self.assembleModelIcons(modelDict)
         
         # Clear the old model buttons and update the left panel
-        while self.modelButtonLayout.count():
+        """ while self.modelButtonLayout.count():
             item = self.modelButtonLayout.takeAt(0)  # Get the first item
             if item.widget():
                 item.widget().deleteLater()
-        self.modelButtonLayout.addLayout(modelButtons)
+        self.modelButtonLayout.addLayout(modelButtons)"""
 
 
 
@@ -229,4 +230,5 @@ if __name__ == "__main__":
     window = GUI()
     window.show()
     sys.exit(app.exec())
+
 
