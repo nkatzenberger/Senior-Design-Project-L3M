@@ -1,5 +1,5 @@
 from l3mPromptModel import *
-from PyQt6.QtWidgets import QPushButton, QScrollArea, QLineEdit
+from PyQt6.QtWidgets import QPushButton, QScrollArea, QLineEdit, QHBoxLayout,QLabel,QFrame
 class PromptPanel():
 
     def __init__(self):
@@ -7,28 +7,16 @@ class PromptPanel():
         self.scroll_area = QScrollArea()
         self.scroll_area.setWidgetResizable(True)
 
-        self.chat_container = QWidget()
-        self.chat_layout = QVBoxLayout()
-        self.chat_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
-        self.chat_container.setLayout(self.chat_layout)
-
-        self.scroll_area.setWidget(self.chat_container)
-        self.rightPanel.addWidget(self.scroll_area)
-
         # Input area
-        input_layout = QHBoxLayout()
         self.input_field = QLineEdit(self)
         self.input_field.setPlaceholderText("Type your message here...")
         self.input_field.returnPressed.connect(self.send_message)
-        input_layout.addWidget(self.input_field)
 
-        send_button = QPushButton("Send", self)
-        send_button.clicked.connect(self.send_message)
-        input_layout.addWidget(send_button)
+        self.send_button = QPushButton("Send", self)
+        self.send_button.clicked.connect(self.send_message)
 
-        #add the chat layout to the right panel
-        self.rightPanel.addLayout(input_layout)
 
+    #Function for adding a new message in chat window
     def add_message(self, message, alignment, user=False):
         message_label = QLabel(message)
         message_label.setWordWrap(True)

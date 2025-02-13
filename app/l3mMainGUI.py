@@ -8,6 +8,7 @@ from transformers import AutoModelForCausalLM, AutoTokenizer
 from l3mPromptModel import PromptModel
 from l3mDownloadModelGUI import DownloadModelGUI
 from l3mModelPanel import ModelPanel
+from l3mPromptPanel import PromptPanel
 
 class GUI(QMainWindow):
     def __init__(self):
@@ -49,27 +50,21 @@ class GUI(QMainWindow):
 
         #RIGHT PANEL CHAT WINDOW STUFF ################################################################################
         # Scrollable chat area
-        self.scroll_area = QScrollArea()
-        self.scroll_area.setWidgetResizable(True)
+        scroll_area = PromptPanel.scroll_area
 
         self.chat_container = QWidget()
         self.chat_layout = QVBoxLayout()
         self.chat_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
         self.chat_container.setLayout(self.chat_layout)
 
-        self.scroll_area.setWidget(self.chat_container)
-        self.rightPanel.addWidget(self.scroll_area)
+        scroll_area.setWidget(self.chat_container)
+        self.rightPanel.addWidget(scroll_area)
 
         # Input area
         input_layout = QHBoxLayout()
-        self.input_field = QLineEdit(self)
-        self.input_field.setPlaceholderText("Type your message here...")
-        self.input_field.returnPressed.connect(self.send_message)
-        input_layout.addWidget(self.input_field)
+        input_layout.addWidget(PromptPanel.input_field)
 
-        send_button = QPushButton("Send", self)
-        send_button.clicked.connect(self.send_message)
-        input_layout.addWidget(send_button)
+        input_layout.addWidget(PromptPanel.send_button)
 
         #add the chat layout to the right panel
         self.rightPanel.addLayout(input_layout)
@@ -81,10 +76,6 @@ class GUI(QMainWindow):
 
 
 #functions that are called with buttons etc..
-    
-
-
-    #Function for adding a new message in chat window
 
     def model_selected(self):
         # Gets path to selected model
@@ -95,17 +86,9 @@ class GUI(QMainWindow):
         self.tokenizer = AutoTokenizer.from_pretrained(model_path)
         self.model = AutoModelForCausalLM.from_pretrained(model_path)
 
-
-
-    
-
-
-
 #entry point for testing, code inside is how you would start GUI
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     window = GUI()
     window.show()
     sys.exit(app.exec())
-
-
