@@ -77,7 +77,7 @@ class GUI(QMainWindow):
 
 #functions that are called with buttons etc..
 
-    def model_selected(self):
+    def model_selected(self, model_name):
         # Gets path to selected model
         script_directory = os.path.dirname(os.path.abspath(__file__))
        # model_name = "openai-community-gpt2" #hardcoded selected model for now
