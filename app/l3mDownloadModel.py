@@ -4,7 +4,7 @@ from PyQt6.QtCore import QThread, pyqtSignal
 from transformers import AutoModel, AutoTokenizer, AutoConfig
 
 class DownloadModel(QThread):
-    model_download_complete = pyqtSignal(bool, dict)
+    model_download_complete = pyqtSignal(bool, str, dict)
 
     def __init__(self, model_name):
         super(DownloadModel, self).__init__()
@@ -50,7 +50,7 @@ class DownloadModel(QThread):
             print(f"Model {self.model_name} successfully downloaded and saved in {self.model_folder}.")
 
             # Emit download was successful to GUI
-            self.model_download_complete.emit(True, {})
+            self.model_download_complete.emit(True, self.model_name, {})
 
         except Exception as e:
             print(f"Error downloading model: {e}")
@@ -61,7 +61,7 @@ class DownloadModel(QThread):
                 print(f"Deleted incomplete model files at {self.model_folder}")
 
             # Emit failure with error details
-            self.model_download_complete.emit(False, {
+            self.model_download_complete.emit(False, self.model_name, {
                 "code": getattr(e, "errno", "Unknown"),
                 "kind": type(e).__name__,
                 "message": str(e)

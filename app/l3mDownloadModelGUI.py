@@ -1,12 +1,11 @@
 import os
-from l3mModelPanel import ModelPanel
 from PyQt6.QtWidgets import *
 from PyQt6.QtCore import Qt, QEvent, QThreadPool
 from l3mDownloadModel import DownloadModel
 from l3mHuggingFaceModelsAPI import HuggingFaceModelsAPI
 
 class DownloadModelGUI(QDialog):
-    def __init__(self, parent=None):
+    def __init__(self, model_panel, main_gui, parent=None):
         super().__init__(parent)
         self.setWindowTitle("Download Model")
         self.setWindowFlags(Qt.WindowType.FramelessWindowHint | Qt.WindowType.WindowStaysOnTopHint)
@@ -34,13 +33,15 @@ class DownloadModelGUI(QDialog):
             }
         """)
 
-        if parent:
-            parent.installEventFilter(self)
+        if main_gui:
+            main_gui.installEventFilter(self)
         self.query = None
         self.download_model_thread = None
         self.setupUi()
         self.pool = QThreadPool.globalInstance()
         self.searchForModel()
+        self.main_gui = main_gui
+        self.model_panel = model_panel
 
     def setupUi(self):
         layout = QVBoxLayout()
@@ -76,8 +77,7 @@ class DownloadModelGUI(QDialog):
         if selected_items:
             selected_model = selected_items[0].text()
             self.download_model_thread = DownloadModel(selected_model)
-            if self.parent():
-                self.download_model_thread.model_download_complete.connect(ModelPanel.onModelDownloadComplete)
+            self.download_model_thread.model_download_complete.connect(self.model_panel.onModelDownloadComplete)
             self.download_model_thread.start()
             #TODO:
             #disable button
@@ -93,3 +93,4 @@ class DownloadModelGUI(QDialog):
             if not self.geometry().contains(event.globalPosition().toPoint()):
                 self.close()
         return super().eventFilter(source, event)
+
