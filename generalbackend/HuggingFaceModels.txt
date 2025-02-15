@@ -1,0 +1,750 @@
+==================================================
+Author: deepseek-ai
+Model Name: DeepSeek-R1
+Model ID: deepseek-ai/DeepSeek-R1
+Library Name: transformers
+Pipeline Tag: text-generation
+Used Storage: 656716.72 MB
+Likes: 8833
+Downloads: 3709337
+Trending Score: None
+Gated: False
+Disabled: False
+Security Repo Status: None
+==================================================
+
+==================================================
+Author: Zyphra
+Model Name: Zonos-v0.1-hybrid
+Model ID: Zyphra/Zonos-v0.1-hybrid
+Library Name: Unknown
+Pipeline Tag: text-to-speech
+Used Storage: 3529.91 MB
+Likes: 746
+Downloads: 5322
+Trending Score: None
+Gated: False
+Disabled: False
+Security Repo Status: None
+==================================================
+
+==================================================
+Author: agentica-org
+Model Name: DeepScaleR-1.5B-Preview
+Model ID: agentica-org/DeepScaleR-1.5B-Preview
+Library Name: transformers
+Pipeline Tag: Unknown
+Used Storage: 6790.02 MB
+Likes: 307
+Downloads: 6650
+Trending Score: None
+Gated: False
+Disabled: False
+Security Repo Status: None
+==================================================
+
+==================================================
+Author: hexgrad
+Model Name: Kokoro-82M
+Model ID: hexgrad/Kokoro-82M
+Library Name: Unknown
+Pipeline Tag: text-to-speech
+Used Storage: 1174.55 MB
+Likes: 3142
+Downloads: 517850
+Trending Score: None
+Gated: False
+Disabled: False
+Security Repo Status: None
+==================================================
+
+==================================================
+Author: deepseek-ai
+Model Name: Janus-Pro-7B
+Model ID: deepseek-ai/Janus-Pro-7B
+Library Name: transformers
+Pipeline Tag: any-to-any
+Used Storage: 28310.56 MB
+Likes: 2951
+Downloads: 409634
+Trending Score: None
+Gated: False
+Disabled: False
+Security Repo Status: None
+==================================================
+
+==================================================
+Author: Zyphra
+Model Name: Zonos-v0.1-transformer
+Model ID: Zyphra/Zonos-v0.1-transformer
+Library Name: Unknown
+Pipeline Tag: text-to-speech
+Used Storage: 3477.61 MB
+Likes: 233
+Downloads: 18328
+Trending Score: None
+Gated: False
+Disabled: False
+Security Repo Status: None
+==================================================
+
+==================================================
+Author: black-forest-labs
+Model Name: FLUX.1-dev
+Model ID: black-forest-labs/FLUX.1-dev
+Library Name: diffusers
+Pipeline Tag: text-to-image
+Used Storage: 78270.01 MB
+Likes: 8724
+Downloads: 1678502
+Trending Score: None
+Gated: auto
+Disabled: False
+Security Repo Status: None
+==================================================
+
+==================================================
+Author: unsloth
+Model Name: DeepSeek-R1-GGUF
+Model ID: unsloth/DeepSeek-R1-GGUF
+Library Name: transformers
+Pipeline Tag: text-generation
+Used Storage: 6330525.00 MB
+Likes: 777
+Downloads: 2141423
+Trending Score: None
+Gated: False
+Disabled: False
+Security Repo Status: None
+==================================================
+
+==================================================
+Author: deepseek-ai
+Model Name: DeepSeek-V3
+Model ID: deepseek-ai/DeepSeek-V3
+Library Name: transformers
+Pipeline Tag: text-generation
+Used Storage: 656821.87 MB
+Likes: 3412
+Downloads: 1518363
+Trending Score: None
+Gated: False
+Disabled: False
+Security Repo Status: None
+==================================================
+
+==================================================
+Author: tomg-group-umd
+Model Name: huginn-0125
+Model ID: tomg-group-umd/huginn-0125
+Library Name: transformers
+Pipeline Tag: text-generation
+Used Storage: 14923.69 MB
+Likes: 140
+Downloads: 5551
+Trending Score: None
+Gated: False
+Disabled: False
+Security Repo Status: None
+==================================================
+
+==================================================
+Author: deepseek-ai
+Model Name: DeepSeek-R1-Distill-Qwen-32B
+Model ID: deepseek-ai/DeepSeek-R1-Distill-Qwen-32B
+Library Name: transformers
+Pipeline Tag: text-generation
+Used Storage: 62492.22 MB
+Likes: 1044
+Downloads: 710409
+Trending Score: None
+Gated: False
+Disabled: False
+Security Repo Status: None
+==================================================
+
+==================================================
+Author: nomic-ai
+Model Name: nomic-embed-text-v2-moe
+Model ID: nomic-ai/nomic-embed-text-v2-moe
+Library Name: sentence-transformers
+Pipeline Tag: sentence-similarity
+Used Storage: 5460.47 MB
+Likes: 117
+Downloads: 3598
+Trending Score: None
+Gated: False
+Disabled: False
+Security Repo Status: None
+==================================================
+
+==================================================
+Author: deepseek-ai
+Model Name: DeepSeek-R1-Distill-Qwen-1.5B
+Model ID: deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B
+Library Name: transformers
+Pipeline Tag: text-generation
+Used Storage: 3389.56 MB
+Likes: 809
+Downloads: 805438
+Trending Score: None
+Gated: False
+Disabled: False
+Security Repo Status: None
+==================================================
+
+==================================================
+Author: NousResearch
+Model Name: DeepHermes-3-Llama-3-8B-Preview
+Model ID: NousResearch/DeepHermes-3-Llama-3-8B-Preview
+Library Name: transformers
+Pipeline Tag: text-generation
+Used Storage: 15332.95 MB
+Likes: 98
+Downloads: 322
+Trending Score: None
+Gated: False
+Disabled: False
+Security Repo Status: None
+==================================================
+
+==================================================
+Author: mistralai
+Model Name: Mistral-Small-24B-Instruct-2501
+Model ID: mistralai/Mistral-Small-24B-Instruct-2501
+Library Name: vllm
+Pipeline Tag: text-generation
+Used Storage: 89952.06 MB
+Likes: 740
+Downloads: 576486
+Trending Score: None
+Gated: auto
+Disabled: False
+Security Repo Status: None
+==================================================
+
+==================================================
+Author: ValueFX9507
+Model Name: Tifa-Deepsex-14b-CoT-GGUF-Q4
+Model ID: ValueFX9507/Tifa-Deepsex-14b-CoT-GGUF-Q4
+Library Name: transformers
+Pipeline Tag: reinforcement-learning
+Used Storage: 24990.31 MB
+Likes: 620
+Downloads: 159809
+Trending Score: None
+Gated: False
+Disabled: False
+Security Repo Status: None
+==================================================
+
+==================================================
+Author: simplescaling
+Model Name: s1-32B
+Model ID: simplescaling/s1-32B
+Library Name: Unknown
+Pipeline Tag: text-generation
+Used Storage: 124984.35 MB
+Likes: 254
+Downloads: 7940
+Trending Score: None
+Gated: False
+Disabled: False
+Security Repo Status: None
+==================================================
+
+==================================================
+Author: tencent
+Model Name: Hunyuan3D-2
+Model ID: tencent/Hunyuan3D-2
+Library Name: hunyuan3d-2.0
+Pipeline Tag: image-to-3d
+Used Storage: 31703.50 MB
+Likes: 894
+Downloads: 55937
+Trending Score: None
+Gated: False
+Disabled: False
+Security Repo Status: None
+==================================================
+
+==================================================
+Author: kudzueye
+Model Name: boreal-hl-v1
+Model ID: kudzueye/boreal-hl-v1
+Library Name: Unknown
+Pipeline Tag: text-to-video
+Used Storage: 172.55 MB
+Likes: 100
+Downloads: 0
+Trending Score: None
+Gated: False
+Disabled: False
+Security Repo Status: None
+==================================================
+
+==================================================
+Author: Liberata
+Model Name: illustrious-xl-v1.0
+Model ID: Liberata/illustrious-xl-v1.0
+Library Name: Unknown
+Pipeline Tag: text-to-image
+Used Storage: 6616.63 MB
+Likes: 82
+Downloads: 0
+Trending Score: None
+Gated: False
+Disabled: False
+Security Repo Status: None
+==================================================
+
+==================================================
+Author: Qwen
+Model Name: Qwen2.5-VL-7B-Instruct
+Model ID: Qwen/Qwen2.5-VL-7B-Instruct
+Library Name: transformers
+Pipeline Tag: image-text-to-text
+Used Storage: 15816.13 MB
+Likes: 420
+Downloads: 902612
+Trending Score: None
+Gated: False
+Disabled: False
+Security Repo Status: None
+==================================================
+
+==================================================
+Author: stabilityai
+Model Name: stable-diffusion-3.5-large
+Model ID: stabilityai/stable-diffusion-3.5-large
+Library Name: diffusers
+Pipeline Tag: text-to-image
+Used Storage: 71995.28 MB
+Likes: 2203
+Downloads: 255791
+Trending Score: None
+Gated: auto
+Disabled: False
+Security Repo Status: None
+==================================================
+
+==================================================
+Author: Alpha-VLLM
+Model Name: Lumina-Image-2.0
+Model ID: Alpha-VLLM/Lumina-Image-2.0
+Library Name: diffusers
+Pipeline Tag: text-to-image
+Used Storage: 40257.50 MB
+Likes: 228
+Downloads: 4967
+Trending Score: None
+Gated: False
+Disabled: False
+Security Repo Status: None
+==================================================
+
+==================================================
+Author: cognitivecomputations
+Model Name: Dolphin3.0-R1-Mistral-24B
+Model ID: cognitivecomputations/Dolphin3.0-R1-Mistral-24B
+Library Name: transformers
+Pipeline Tag: text-generation
+Used Storage: 44977.16 MB
+Likes: 114
+Downloads: 1920
+Trending Score: None
+Gated: False
+Disabled: False
+Security Repo Status: None
+==================================================
+
+==================================================
+Author: deepseek-ai
+Model Name: DeepSeek-R1-Distill-Llama-8B
+Model ID: deepseek-ai/DeepSeek-R1-Distill-Llama-8B
+Library Name: transformers
+Pipeline Tag: text-generation
+Used Storage: 15316.54 MB
+Likes: 518
+Downloads: 596193
+Trending Score: None
+Gated: False
+Disabled: False
+Security Repo Status: None
+==================================================
+
+==================================================
+Author: deepseek-ai
+Model Name: DeepSeek-R1-Distill-Qwen-7B
+Model ID: deepseek-ai/DeepSeek-R1-Distill-Qwen-7B
+Library Name: transformers
+Pipeline Tag: text-generation
+Used Storage: 14525.67 MB
+Likes: 424
+Downloads: 632091
+Trending Score: None
+Gated: False
+Disabled: False
+Security Repo Status: None
+==================================================
+
+==================================================
+Author: open-thoughts
+Model Name: OpenThinker-32B
+Model ID: open-thoughts/OpenThinker-32B
+Library Name: transformers
+Pipeline Tag: text-generation
+Used Storage: 1896048.16 MB
+Likes: 66
+Downloads: 196
+Trending Score: None
+Gated: False
+Disabled: False
+Security Repo Status: None
+==================================================
+
+==================================================
+Author: ValueFX9507
+Model Name: Tifa-DeepsexV2-7b-MGRPO-GGUF-Q4
+Model ID: ValueFX9507/Tifa-DeepsexV2-7b-MGRPO-GGUF-Q4
+Library Name: transformers
+Pipeline Tag: reinforcement-learning
+Used Storage: 0.00 MB
+Likes: 63
+Downloads: 0
+Trending Score: None
+Gated: False
+Disabled: False
+Security Repo Status: None
+==================================================
+
+==================================================
+Author: meta-llama
+Model Name: Llama-3.3-70B-Instruct
+Model ID: meta-llama/Llama-3.3-70B-Instruct
+Library Name: transformers
+Pipeline Tag: text-generation
+Used Storage: 269179.02 MB
+Likes: 1930
+Downloads: 573955
+Trending Score: None
+Gated: manual
+Disabled: False
+Security Repo Status: None
+==================================================
+
+==================================================
+Author: deepseek-ai
+Model Name: DeepSeek-R1-Zero
+Model ID: deepseek-ai/DeepSeek-R1-Zero
+Library Name: transformers
+Pipeline Tag: text-generation
+Used Storage: 656687.48 MB
+Likes: 791
+Downloads: 29409
+Trending Score: None
+Gated: False
+Disabled: False
+Security Repo Status: None
+==================================================
+
+==================================================
+Author: zed-industries
+Model Name: zeta
+Model ID: zed-industries/zeta
+Library Name: Unknown
+Pipeline Tag: Unknown
+Used Storage: 95453.60 MB
+Likes: 57
+Downloads: 297
+Trending Score: None
+Gated: False
+Disabled: False
+Security Repo Status: None
+==================================================
+
+==================================================
+Author: huihui-ai
+Model Name: DeepSeek-R1-Distill-Qwen-32B-abliterated
+Model ID: huihui-ai/DeepSeek-R1-Distill-Qwen-32B-abliterated
+Library Name: transformers
+Pipeline Tag: text-generation
+Used Storage: 62503.11 MB
+Likes: 158
+Downloads: 4981
+Trending Score: None
+Gated: False
+Disabled: False
+Security Repo Status: None
+==================================================
+
+==================================================
+Author: AIDC-AI
+Model Name: Ovis2-34B
+Model ID: AIDC-AI/Ovis2-34B
+Library Name: transformers
+Pipeline Tag: image-text-to-text
+Used Storage: 66525.81 MB
+Likes: 56
+Downloads: 190
+Trending Score: None
+Gated: False
+Disabled: False
+Security Repo Status: None
+==================================================
+
+==================================================
+Author: openai
+Model Name: whisper-large-v3-turbo
+Model ID: openai/whisper-large-v3-turbo
+Library Name: transformers
+Pipeline Tag: automatic-speech-recognition
+Used Storage: 4725.70 MB
+Likes: 1953
+Downloads: 7308940
+Trending Score: None
+Gated: False
+Disabled: False
+Security Repo Status: None
+==================================================
+
+==================================================
+Author: deepseek-ai
+Model Name: deepseek-vl2
+Model ID: deepseek-ai/deepseek-vl2
+Library Name: transformers
+Pipeline Tag: image-text-to-text
+Used Storage: 52415.08 MB
+Likes: 260
+Downloads: 13253
+Trending Score: None
+Gated: False
+Disabled: False
+Security Repo Status: None
+==================================================
+
+==================================================
+Author: deepseek-ai
+Model Name: DeepSeek-R1-Distill-Llama-70B
+Model ID: deepseek-ai/DeepSeek-R1-Distill-Llama-70B
+Library Name: transformers
+Pipeline Tag: text-generation
+Used Storage: 134570.60 MB
+Likes: 541
+Downloads: 350936
+Trending Score: None
+Gated: False
+Disabled: False
+Security Repo Status: None
+==================================================
+
+==================================================
+Author: lerobot
+Model Name: pi0
+Model ID: lerobot/pi0
+Library Name: lerobot
+Pipeline Tag: robotics
+Used Storage: 40107.24 MB
+Likes: 93
+Downloads: 3067
+Trending Score: None
+Gated: False
+Disabled: False
+Security Repo Status: None
+==================================================
+
+==================================================
+Author: ibm-granite
+Model Name: granite-3.2-8b-instruct-preview
+Model ID: ibm-granite/granite-3.2-8b-instruct-preview
+Library Name: transformers
+Pipeline Tag: text-generation
+Used Storage: 31169.47 MB
+Likes: 45
+Downloads: 1514
+Trending Score: None
+Gated: False
+Disabled: False
+Security Repo Status: None
+==================================================
+
+==================================================
+Author: AIDC-AI
+Model Name: Ovis2-1B
+Model ID: AIDC-AI/Ovis2-1B
+Library Name: transformers
+Pipeline Tag: image-text-to-text
+Used Storage: 2428.36 MB
+Likes: 45
+Downloads: 219
+Trending Score: None
+Gated: False
+Disabled: False
+Security Repo Status: None
+==================================================
+
+==================================================
+Author: Lightricks
+Model Name: LTX-Video
+Model ID: Lightricks/LTX-Video
+Library Name: diffusers
+Pipeline Tag: image-to-video
+Used Storage: 95392.09 MB
+Likes: 974
+Downloads: 325428
+Trending Score: None
+Gated: False
+Disabled: False
+Security Repo Status: None
+==================================================
+
+==================================================
+Author: Qwen
+Model Name: Qwen2.5-Coder-32B-Instruct
+Model ID: Qwen/Qwen2.5-Coder-32B-Instruct
+Library Name: transformers
+Pipeline Tag: text-generation
+Used Storage: 124991.98 MB
+Likes: 1601
+Downloads: 99514
+Trending Score: None
+Gated: False
+Disabled: False
+Security Repo Status: None
+==================================================
+
+==================================================
+Author: AIDC-AI
+Model Name: Ovis2-16B
+Model ID: AIDC-AI/Ovis2-16B
+Library Name: transformers
+Pipeline Tag: image-text-to-text
+Used Storage: 30891.65 MB
+Likes: 41
+Downloads: 184
+Trending Score: None
+Gated: False
+Disabled: False
+Security Repo Status: None
+==================================================
+
+==================================================
+Author: stepfun-ai
+Model Name: GOT-OCR-2.0-hf
+Model ID: stepfun-ai/GOT-OCR-2.0-hf
+Library Name: transformers
+Pipeline Tag: image-text-to-text
+Used Storage: 7502.01 MB
+Likes: 137
+Downloads: 9745
+Trending Score: None
+Gated: False
+Disabled: False
+Security Repo Status: None
+==================================================
+
+==================================================
+Author: ali-vilab
+Model Name: ACE_Plus
+Model ID: ali-vilab/ACE_Plus
+Library Name: Unknown
+Pipeline Tag: Unknown
+Used Storage: 877.82 MB
+Likes: 90
+Downloads: 263
+Trending Score: None
+Gated: False
+Disabled: False
+Security Repo Status: None
+==================================================
+
+==================================================
+Author: ZhengPeng7
+Model Name: BiRefNet_HR
+Model ID: ZhengPeng7/BiRefNet_HR
+Library Name: birefnet
+Pipeline Tag: image-segmentation
+Used Storage: 847.77 MB
+Likes: 52
+Downloads: 5119
+Trending Score: None
+Gated: False
+Disabled: False
+Security Repo Status: None
+==================================================
+
+==================================================
+Author: black-forest-labs
+Model Name: FLUX.1-schnell
+Model ID: black-forest-labs/FLUX.1-schnell
+Library Name: diffusers
+Pipeline Tag: text-to-image
+Used Storage: 78371.44 MB
+Likes: 3377
+Downloads: 1041389
+Trending Score: None
+Gated: False
+Disabled: False
+Security Repo Status: None
+==================================================
+
+==================================================
+Author: simplescaling
+Model Name: s1.1-32B
+Model ID: simplescaling/s1.1-32B
+Library Name: transformers
+Pipeline Tag: text-generation
+Used Storage: 124995.32 MB
+Likes: 39
+Downloads: 1933
+Trending Score: None
+Gated: False
+Disabled: False
+Security Repo Status: None
+==================================================
+
+==================================================
+Author: sentence-transformers
+Model Name: all-MiniLM-L6-v2
+Model ID: sentence-transformers/all-MiniLM-L6-v2
+Library Name: sentence-transformers
+Pipeline Tag: sentence-similarity
+Used Storage: 1296.85 MB
+Likes: 2979
+Downloads: 83621491
+Trending Score: None
+Gated: False
+Disabled: False
+Security Repo Status: None
+==================================================
+
+==================================================
+Author: bartowski
+Model Name: DeepSeek-R1-Distill-Qwen-32B-GGUF
+Model ID: bartowski/DeepSeek-R1-Distill-Qwen-32B-GGUF
+Library Name: Unknown
+Pipeline Tag: text-generation
+Used Storage: 494954.66 MB
+Likes: 204
+Downloads: 2788835
+Trending Score: None
+Gated: False
+Disabled: False
+Security Repo Status: None
+==================================================
+
+==================================================
+Author: meta-llama
+Model Name: Llama-3.1-8B
+Model ID: meta-llama/Llama-3.1-8B
+Library Name: transformers
+Pipeline Tag: text-generation
+Used Storage: 30851.48 MB
+Likes: 1410
+Downloads: 1209776
+Trending Score: None
+Gated: manual
+Disabled: False
+Security Repo Status: None
+==================================================
+
