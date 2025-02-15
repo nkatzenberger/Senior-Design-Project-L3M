@@ -8,8 +8,6 @@ from transformers import AutoModelForCausalLM, AutoTokenizer
 class ModelPanel():
     def __init__(self, main_gui):
         self.main_gui = main_gui # Store reference to GUI
-        self.tokenizer = None
-        self.model = None
 
         # Define Layout for Model Panel
         self.modelPanel = QVBoxLayout()
@@ -94,12 +92,10 @@ class ModelPanel():
         modelDict = self.createAcronyms(self.getModelNames())
         self.createModelButtons(modelDict)
 
-    # In main GUI, curr_tokenizer and curr_model inherit tokenizer and model, 
-    # then passes to prompt so prompt uses current selected model.
+    # Store current Model and Tokenizer in GUI so Prompt panel can access
     def modelButtonClicked(self, model_name:str):
         print(model_name)
         
-        #Sets tokenizer and model to model clicked
         script_directory = os.path.dirname(os.path.abspath(__file__))
         model_path = os.path.join(script_directory, "models", model_name)
         self.main_gui.current_tokenizer = AutoTokenizer.from_pretrained(model_path)
