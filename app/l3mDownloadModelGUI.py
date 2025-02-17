@@ -20,7 +20,6 @@ class DownloadModelGUI(QDialog):
         #Initialize variables and get default list of models for when this gui opens
         self.query = None
         self.download_model_thread = None
-        self.searchForModel()
 
         #Set up window
         self.setWindowTitle("Download Model")
@@ -71,6 +70,10 @@ class DownloadModelGUI(QDialog):
         self.setLayout(layout)
 
 
+        # Get default list of models
+        self.searchForModel()
+
+
     #Triggers API to run on thread
     def searchForModel(self):
         self.query = self.search_input.text().strip()
@@ -80,9 +83,9 @@ class DownloadModelGUI(QDialog):
         self.pool.start(self.search)
 
     #Updates list everytime thread emits the API is done
-    def updateModelList(self, model_ids):
-        self.model_list.clear()
-        self.model_list.addItems(model_ids)
+    def updateModelList(self, model_data):
+        model_names = [model["Model Name"] for model in model_data if "Model Name" in model]
+        self.model_list.addItems(model_names)
 
     #Allow users to select model from the list and install them
     def downloadSelectedModel(self):
