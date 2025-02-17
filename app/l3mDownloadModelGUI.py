@@ -7,6 +7,22 @@ from l3mHuggingFaceModelsAPI import HuggingFaceModelsAPI
 class DownloadModelGUI(QDialog):
     def __init__(self, model_panel, main_gui, parent=None):
         super().__init__(parent)
+        # Create references to other classes so it can make updates to them
+        self.main_gui = main_gui
+        self.model_panel = model_panel
+
+        # Connect event filter to mainGUI
+        main_gui.installEventFilter(self)
+
+        # Initialize threadpool for api to use
+        self.pool = QThreadPool.globalInstance()
+
+        #Initialize variables and get default list of models for when this gui opens
+        self.query = None
+        self.download_model_thread = None
+        self.searchForModel()
+
+        #Set up window
         self.setWindowTitle("Download Model")
         self.setWindowFlags(Qt.WindowType.FramelessWindowHint | Qt.WindowType.WindowStaysOnTopHint)
         self.setGeometry(400, 267, 400, 200)
@@ -33,30 +49,27 @@ class DownloadModelGUI(QDialog):
             }
         """)
 
-        if main_gui:
-            main_gui.installEventFilter(self)
-        self.query = None
-        self.download_model_thread = None
-        self.setupUi()
-        self.pool = QThreadPool.globalInstance()
-        self.searchForModel()
-        self.main_gui = main_gui
-        self.model_panel = model_panel
-
-    def setupUi(self):
+        # Set layout for window
         layout = QVBoxLayout()
+
+        # Create search bar
         self.search_input = QLineEdit(self)
         self.search_input.setPlaceholderText("Enter search query...")
         self.search_input.returnPressed.connect(self.searchForModel)
-        layout.addWidget(self.search_input)
 
+        # Create list for models
         self.model_list = QListWidget()
-        layout.addWidget(self.model_list)
 
+        # Create download button
         download_button = QPushButton("Download")
         download_button.clicked.connect(self.downloadSelectedModel)
+
+        # Add elements to window
+        layout.addWidget(self.search_input)
+        layout.addWidget(self.model_list)
         layout.addWidget(download_button)
         self.setLayout(layout)
+
 
     #Triggers API to run on thread
     def searchForModel(self):
