@@ -20,7 +20,7 @@ class DownloadModelGUI(QDialog):
         #Initialize variables and get default list of models for when this gui opens
         self.query = None
         self.download_model_thread = None
-        self.searchForModel()
+        #self.searchForModel()
 
         #Set up window
         self.setWindowTitle("Download Model")

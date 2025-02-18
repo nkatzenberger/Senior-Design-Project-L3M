@@ -110,6 +110,11 @@ class ModelPanel():
         if success:
             self.refreshModelButtons()
         else:
+            error = { #temp error code, was getting an error before
+             'code': '200',
+             'kind': 'Download Failed',
+             'message': 'The Download Failed, see error message.'
+            }
             QMessageBox.warning(
                 None, 
                 "Download Failed", 
