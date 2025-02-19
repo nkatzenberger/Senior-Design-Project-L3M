@@ -1,6 +1,6 @@
 import os
 from PyQt6.QtWidgets import *
-from PyQt6.QtCore import Qt, QEvent, QThreadPool
+from PyQt6.QtCore import Qt, QEvent, QThreadPool, QMetaObject
 from l3mDownloadModel import DownloadModel
 from l3mHuggingFaceModelsAPI import HuggingFaceModelsAPI
 
@@ -20,7 +20,6 @@ class DownloadModelGUI(QDialog):
         #Initialize variables and get default list of models for when this gui opens
         self.query = None
         self.download_model_thread = None
-        #self.searchForModel()
 
         #Set up window
         self.setWindowTitle("Download Model")
@@ -70,6 +69,9 @@ class DownloadModelGUI(QDialog):
         layout.addWidget(download_button)
         self.setLayout(layout)
 
+        # Get default list of models
+        self.searchForModel()
+
 
     #Triggers API to run on thread
     def searchForModel(self):
@@ -80,15 +82,34 @@ class DownloadModelGUI(QDialog):
         self.pool.start(self.search)
 
     #Updates list everytime thread emits the API is done
-    def updateModelList(self, model_ids):
-        self.model_list.clear()
-        self.model_list.addItems(model_ids)
+    def updateModelList(self, model_data):
+        """Updates the UI with model names from model_data dictionary keys."""
+        self.fetched_model_data = model_data
+        
+        model_ids = list(model_data.keys())  # Extract only the keys (model IDs)
+
+        # Ensure UI updates happen on the main thread
+        self.model_list.clear()  # Directly clear before adding new items
+        self.model_list.addItems(model_ids)  # Add model names
+
+        # Process UI events immediately to reflect changes
+        QApplication.processEvents()
 
     #Allow users to select model from the list and install them
     def downloadSelectedModel(self):
         selected_items = self.model_list.selectedItems()
         if selected_items:
             selected_model = selected_items[0].text()
+
+            # Retrieve the model ID from stored data
+            if hasattr(self, "fetched_model_data") and selected_model in self.fetched_model_data:
+                model_id = self.fetched_model_data[selected_model]["Model ID"]
+            else:
+                print("Model ID not found for the selected model!")
+                return
+
+            print(f"Downloading model: {model_id}")
+
             self.download_model_thread = DownloadModel(selected_model)
             self.download_model_thread.model_download_complete.connect(self.model_panel.onModelDownloadComplete)
             self.download_model_thread.start()
