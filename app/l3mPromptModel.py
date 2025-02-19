@@ -1,7 +1,7 @@
 from PyQt6.QtCore import QRunnable, QObject, pyqtSignal, Qt
 from transformers import logging
 
-class WorkerSignals(QObject):
+class PromptSignals(QObject):
     result = pyqtSignal(str)
 
 class PromptModel(QRunnable):
@@ -12,7 +12,7 @@ class PromptModel(QRunnable):
         self.prompt = prompt
         self.tokenizer = tokenizer
         self.model = model
-        self.signals = WorkerSignals()
+        self.signals = PromptSignals()
     
     def run(self):
         try:

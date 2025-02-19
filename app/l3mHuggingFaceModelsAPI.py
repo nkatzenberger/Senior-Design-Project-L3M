@@ -3,14 +3,14 @@ import httpx
 from PyQt6.QtCore import QRunnable, QObject, pyqtSignal
 from huggingface_hub import HfApi
 
-class WorkerSignals(QObject):
+class APISignals(QObject):
     result = pyqtSignal(dict)
 
 class HuggingFaceModelsAPI(QRunnable):
     def __init__(self, query):
         super(HuggingFaceModelsAPI, self).__init__()
         self.query = query
-        self.signals = WorkerSignals()
+        self.signals = APISignals()
         self.api = HfApi()
 
     async def fetch_model_info(self, session, model_id):
