@@ -28,7 +28,8 @@ class DownloadModel(QThread):
             AutoModel.from_pretrained(
                 self.model_name, 
                 low_cpu_mem_usage=True, # Prevents entire model being loaded into ram
-                device_map="auto"  # Automatically offloads model parts to disk if needed
+                device_map="auto",  # Automatically offloads model parts to disk if needed
+                trust_remote_code=True #allows more models to be downloaded
             )
 
             if not self._is_running: # Stop after download

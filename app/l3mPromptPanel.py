@@ -70,7 +70,10 @@ class PromptPanel(QWidget):
     # Function that sends users prompt to the model
     def send_message(self):
         user_message = self.input_field.text().strip()
-        if not self.main_gui.current_tokenizer or not self.main_gui.current_model:
+
+        if not user_message:
+            return  # Avoid triggering if there's no user input
+        elif not self.main_gui.current_tokenizer or not self.main_gui.current_model:
             QMessageBox.warning(
                 None, 
                 "No Model Selected", 

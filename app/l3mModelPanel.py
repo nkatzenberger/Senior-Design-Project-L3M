@@ -57,8 +57,7 @@ class ModelPanel():
         for acronym, modelName in modelAcronyms.items():
             # Create Button
             btn = QPushButton(str(acronym))
-            btn.clicked.connect(lambda: self.modelButtonClicked(modelName))
-
+            btn.clicked.connect(lambda checked, modelName = modelName: self.modelButtonClicked(modelName))
             # Format button
             btn.setToolTip(modelName)
             btn.setFixedSize(50,50)
@@ -94,8 +93,8 @@ class ModelPanel():
 
     # Store current Model and Tokenizer in GUI so Prompt panel can access
     def modelButtonClicked(self, model_name:str):
+        model_name = str(model_name)
         print(model_name)
-        
         script_directory = os.path.dirname(os.path.abspath(__file__))
         model_path = os.path.join(script_directory, "models", model_name)
         self.main_gui.current_tokenizer = AutoTokenizer.from_pretrained(model_path)
@@ -111,6 +110,11 @@ class ModelPanel():
         if success:
             self.refreshModelButtons()
         else:
+            error = { #temp error code, was getting an error before
+             'code': '200',
+             'kind': 'Download Failed',
+             'message': 'The Download Failed, see error message.'
+            }
             QMessageBox.warning(
                 None, 
                 "Download Failed", 
