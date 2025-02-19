@@ -1,13 +1,11 @@
 from l3mPromptModel import *
 from PyQt6.QtWidgets import QPushButton, QScrollArea, QLineEdit, QHBoxLayout, QLabel, QFrame, QWidget, QVBoxLayout, QMessageBox
-from PyQt6.QtCore import QThreadPool
 
 
 class PromptPanel(QWidget):
     def __init__(self, main_gui):
         super().__init__()
         self.main_gui = main_gui  # Store reference to GUI
-        self.pool = QThreadPool.globalInstance() #Initialize thread pool for PromptModel
 
         # Define Layout for Prompt Panel
         self.promptPanel = QVBoxLayout()
@@ -83,7 +81,7 @@ class PromptPanel(QWidget):
             self.add_message(user_message, alignment=Qt.AlignmentFlag.AlignRight, user=True)
             prompt_model = PromptModel(user_message, self.main_gui.current_tokenizer, self.main_gui.current_model)
             prompt_model.signals.result.connect(self.respond_to_message)
-            self.pool.start(prompt_model) #THIS IS WHERE USER QUERRY GETS SENT TO MODEL
+            self.main_gui.pool.start(prompt_model) #THIS IS WHERE USER QUERRY GETS SENT TO MODEL
             self.input_field.clear()
 
     # Function for adding models response to chat window

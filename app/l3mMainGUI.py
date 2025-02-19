@@ -1,6 +1,7 @@
 import sys
 import os
 from PyQt6.QtWidgets import *
+from PyQt6.QtCore import QThreadPool
 from typing import Optional
 from l3mModelPanel import ModelPanel
 from l3mPromptPanel import PromptPanel
@@ -8,6 +9,8 @@ from l3mPromptPanel import PromptPanel
 class GUI(QMainWindow):
     def __init__(self):
         super().__init__()
+        #Initialize thread pool for PromptModel and HuggingFaceModelsAPI
+        self.pool = QThreadPool.globalInstance() 
 
         # Initialize ModelPanel
         self.ref_model_panel = ModelPanel(self) # Pass reference to GUI so ModelPanel can update GUI

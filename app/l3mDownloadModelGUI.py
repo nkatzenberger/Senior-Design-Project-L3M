@@ -14,12 +14,8 @@ class DownloadModelGUI(QDialog):
         # Connect event filter to mainGUI
         main_gui.installEventFilter(self)
 
-        # Initialize threadpool for api to use
-        self.pool = QThreadPool.globalInstance()
-
         #Initialize variables and get default list of models for when this gui opens
         self.query = None
-        self.download_model_thread = None
 
         #Set up window
         self.setWindowTitle("Download Model")
@@ -79,7 +75,7 @@ class DownloadModelGUI(QDialog):
         # Start QRunnable and set signal listener to update when response comes back
         self.search = HuggingFaceModelsAPI(self.query)
         self.search.signals.result.connect(self.updateModelList)
-        self.pool.start(self.search)
+        self.main_gui.pool.start(self.search)
 
     #Updates list everytime thread emits the API is done
     def updateModelList(self, model_data):

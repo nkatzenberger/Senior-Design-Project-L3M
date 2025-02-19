@@ -77,7 +77,7 @@ class HuggingFaceModelsAPI(QRunnable):
             model_data = asyncio.run(self.get_all_model_info(model_ids))
 
         except Exception as e:
-            model_data = [{"Error": f"Unexpected error - {str(e)}"}]
+            model_data = {"Error": f"Unexpected error - {str(e)}"}
 
         # Signal to the UI that the API call is complete
         self.signals.result.emit(model_data)
