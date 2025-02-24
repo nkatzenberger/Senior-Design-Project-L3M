@@ -24,7 +24,7 @@ class ModelPanel():
         # Create model buttons
         modelDict = self.createAcronyms(self.getModelNames())
         self.createModelButtons(modelDict)
-
+        print(modelDict)
         # Create Download Model button
         self.downloadModelButton = QPushButton("Download Model")
         self.downloadModelButton.setStyleSheet(
@@ -38,10 +38,25 @@ class ModelPanel():
 
     #Creates acronyms for model buttons
     def createAcronyms(self, modelNames: list[str]):
-        #TODO: Replace numeric logic with real acronyms
+            #takes first character in folder name, then every first character after a -, _, or / limited to 3 characters
         acronyms = {}
-        for i,name in enumerate(modelNames):
-            acronyms[i + 1] = name
+        for name in modelNames:
+            acronymLen = 0
+            finalAcro = ""
+            for l in range(0, len(name)-1):
+                if acronymLen > 2:
+                        acronyms[finalAcro] = name
+                        break
+                elif l == 0:
+                    finalAcro += name[l]
+                    acronymLen +=1
+                    continue
+                elif l == len(name)-1:
+                    acronyms[finalAcro] = name
+                if (name[l] == '-' or name [l] == '_' or name[l] == '/'):
+                    finalAcro += name[l+1]
+                    acronymLen +=1       
+        print(acronyms)
         return acronyms
     
     # Get the names of all installed models
