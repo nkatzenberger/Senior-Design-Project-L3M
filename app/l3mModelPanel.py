@@ -1,6 +1,6 @@
 import os
 from typing import Optional
-from PyQt6.QtWidgets import QPushButton, QVBoxLayout, QMessageBox
+from PyQt6.QtWidgets import QPushButton, QVBoxLayout, QMessageBox, QButtonGroup
 from PyQt6.QtCore import Qt
 from l3mDownloadModelGUI import DownloadModelGUI
 from transformers import AutoModelForCausalLM, AutoTokenizer
@@ -37,29 +37,6 @@ class ModelPanel():
         self.modelPanel.addWidget(self.downloadModelButton)
 
     #Creates acronyms for model buttons
-    """
-    def createAcronyms(self, modelNames: list[str]):
-        #takes first character in folder name, then every first character after a -, _, or / limited to 3 characters
-        acronyms = {}
-        for name in modelNames:
-            acronymLen = 0
-            finalAcro = ""
-            for l in range(0, len(name)-1):
-                if acronymLen > 2:
-                        acronyms[finalAcro] = name
-                        break
-                elif l == 0:
-                    finalAcro += name[l]
-                    acronymLen +=1
-                    continue
-                elif l == len(name)-1:
-                    acronyms[finalAcro] = name
-                if (name[l] == '-' or name [l] == '_' or name[l] == '/'):
-                    finalAcro += name[l+1]
-                    acronymLen +=1       
-        print(acronyms)
-        return acronyms
-    """
     def createAcronyms(self, modelNames: list[str]):
         acronyms = {}
         for name in modelNames:
@@ -93,30 +70,48 @@ class ModelPanel():
     
     # Create model button for each model installed
     def createModelButtons(self, modelAcronyms: dict):
+        # Create a QButtonGroup to manage the buttons
+        self.button_group = QButtonGroup()  # Store in self to prevent garbage collection
+        self.button_group.setExclusive(True)  # Ensure only one button is checked at a time
+
         for acronym, modelName in modelAcronyms.items():
-            # Create Button
+            # Create a checkable button
             btn = QPushButton(str(acronym))
-            btn.clicked.connect(lambda checked, modelName = modelName: self.modelButtonClicked(modelName))
-            # Format button
+            btn.setCheckable(True)  # Allows toggling
+            self.button_group.addButton(btn)  # Add to group
+
+            # Apply styles
             btn.setToolTip(modelName)
-            btn.setFixedSize(50,50)
+            btn.setFixedSize(50, 50)
             btn.setStyleSheet("""
-                QPushButton{
+                QPushButton {
                     background-color: gray;
                     border-radius: 25px;
-                    border: 2px solid #27F2FA;
+                    border: none;
                     font-size: 14pt;
-                    font-weight:bold;
-                    color: black;   
-                    text-align:center;
+                    font-weight: bold;
+                    color: black;
+                    text-align: center;
                 }
-                
-                QToolTip {
+                QPushButton:checked {
+                    border: 2px solid #27F2FA;
+                    background-color: lightblue;
                 }
-            """)#TODO need to remove border on this style after model selecting is implemented
+            """)
 
-            # Add button to model button layout
+            # Helper function to handle button click
+            def handleButtonClick(modelName, btn):
+                self.modelButtonClicked(modelName)
+                self.main_gui.repaint()  # Force UI update
+
+            # Use lambda to pass parameters
+            btn.clicked.connect(lambda checked, modelName=modelName, btn=btn: handleButtonClick(modelName, btn))
+
             self.modelButtonLayout.addWidget(btn)
+
+        # Ensure the first button is selected by default (optional)
+        if self.button_group.buttons():
+            self.button_group.buttons()[0].setChecked(True)
 
     # Recreate model buttons list to add new model button
     def refreshModelButtons(self):
