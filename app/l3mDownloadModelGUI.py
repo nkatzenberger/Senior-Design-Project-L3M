@@ -106,7 +106,7 @@ class DownloadModelGUI(QDialog):
 
             print(f"Downloading model: {model_id}")
 
-            self.download_model_thread = DownloadModel(selected_model)
+            self.download_model_thread = DownloadModel(model_id)
             self.download_model_thread.model_download_complete.connect(self.model_panel.onModelDownloadComplete)
             self.download_model_thread.start()
             #TODO:

@@ -37,7 +37,6 @@ class GUI(QMainWindow):
         panelLayout.addLayout(self.ref_model_panel.modelPanel)
         panelLayout.addLayout(self.ref_prompt_panel.promptPanel)
         central_widget.setLayout(panelLayout)
-    
 
 #entry point for testing, code inside is how you would start GUI
 if __name__ == "__main__":

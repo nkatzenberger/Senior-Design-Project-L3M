@@ -37,8 +37,9 @@ class ModelPanel():
         self.modelPanel.addWidget(self.downloadModelButton)
 
     #Creates acronyms for model buttons
+    """
     def createAcronyms(self, modelNames: list[str]):
-            #takes first character in folder name, then every first character after a -, _, or / limited to 3 characters
+        #takes first character in folder name, then every first character after a -, _, or / limited to 3 characters
         acronyms = {}
         for name in modelNames:
             acronymLen = 0
@@ -58,14 +59,37 @@ class ModelPanel():
                     acronymLen +=1       
         print(acronyms)
         return acronyms
-    
+    """
+    def createAcronyms(self, modelNames: list[str]):
+        acronyms = {}
+        for name in modelNames:
+            # Initialize acronym with the first character
+            finalAcro = name[0].upper()
+
+            # Add additional characters after special delimiters
+            delimiters = ['-', '_', '/']
+            for i in range(1, len(name)):
+                if len(finalAcro) >= 3:
+                    break
+                if name[i-1] in delimiters:
+                    finalAcro += name[i].upper()
+
+            # Ensure the acronym is at least 3 characters long
+            while len(finalAcro) < 3:
+                finalAcro += name[len(finalAcro)].upper()
+
+            acronyms[finalAcro] = name
+        print("Acronyms created:", acronyms)
+        return acronyms
+
     # Get the names of all installed models
     def getModelNames(self):
         #TODO: Create models folder if one doesn't already exist.
-        if not os.path.exists('./models'):
+        models_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'models')
+        if not os.path.exists(models_dir):
             raise FileNotFoundError(f"The directory './models' does not exist.")
         
-        return [name for name in os.listdir('./models') if os.path.isdir(os.path.join('./models', name))]
+        return [name for name in os.listdir(models_dir) if os.path.isdir(os.path.join(models_dir, name))]
     
     # Create model button for each model installed
     def createModelButtons(self, modelAcronyms: dict):
@@ -103,8 +127,12 @@ class ModelPanel():
                 item.widget().deleteLater()
 
         # Refresh list
-        modelDict = self.createAcronyms(self.getModelNames())
+        modelNames = self.getModelNames()
+        print(modelNames)
+        modelDict = self.createAcronyms(modelNames)
+        print(modelDict)
         self.createModelButtons(modelDict)
+        print("createModelButtons")
 
     # Store current Model and Tokenizer in GUI so Prompt panel can access
     def modelButtonClicked(self, model_name:str):
@@ -124,14 +152,21 @@ class ModelPanel():
     def onModelDownloadComplete(self, success: bool, error: Optional[dict] = None):
         if success:
             self.refreshModelButtons()
+            print("refresh")
         else:
-            error = { #temp error code, was getting an error before
-             'code': '200',
-             'kind': 'Download Failed',
-             'message': 'The Download Failed, see error message.'
-            }
+            if not error:
+                code = "N/A"
+                kind = "Unknown Error"
+                message = "No details provided."
+
+            # Handle the case where error is a dict
+            if isinstance(error, dict):
+                code = error.get('code', 'N/A')
+                kind = error.get('kind', 'Unknown Error')
+                message = error.get('message', 'No details')
+
             QMessageBox.warning(
                 None, 
                 "Download Failed", 
-                f"Code: {error.get('code', 'N/A')}\nKind: {error.get('kind', 'Unknown Error')}\nDetails: {error.get('message', 'No details')}"
+                f"Code: {code}\nKind: {kind}\nDetails: {message}"
             )
