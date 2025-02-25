@@ -24,7 +24,7 @@ class ModelPanel():
         # Create model buttons
         modelDict = self.createAcronyms(self.getModelNames())
         self.createModelButtons(modelDict)
-        print(modelDict)
+
         # Create Download Model button
         self.downloadModelButton = QPushButton("Download Model")
         self.downloadModelButton.setStyleSheet(
@@ -61,24 +61,26 @@ class ModelPanel():
 
     # Get the names of all installed models
     def getModelNames(self):
-        #TODO: Create models folder if one doesn't already exist.
         models_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'models')
-        if not os.path.exists(models_dir):
-            raise FileNotFoundError(f"The directory './models' does not exist.")
         
-        return [name for name in os.listdir(models_dir) if os.path.isdir(os.path.join(models_dir, name))]
+        if not os.path.exists(models_dir):
+            print("Models directory does not exist!")
+            return []  #return an empty list
+
+        model_names = [name for name in os.listdir(models_dir) if os.path.isdir(os.path.join(models_dir, name))]
+        return model_names
     
     # Create model button for each model installed
     def createModelButtons(self, modelAcronyms: dict):
         # Create a QButtonGroup to manage the buttons
-        self.button_group = QButtonGroup()  # Store in self to prevent garbage collection
+        self.button_group = QButtonGroup()
         self.button_group.setExclusive(True)  # Ensure only one button is checked at a time
 
         for acronym, modelName in modelAcronyms.items():
-            # Create a checkable button
+            # Create Button and add to button group
             btn = QPushButton(str(acronym))
-            btn.setCheckable(True)  # Allows toggling
-            self.button_group.addButton(btn)  # Add to group
+            btn.setCheckable(True)
+            self.button_group.addButton(btn)
 
             # Apply styles
             btn.setToolTip(modelName)
@@ -95,23 +97,14 @@ class ModelPanel():
                 }
                 QPushButton:checked {
                     border: 2px solid #27F2FA;
-                    background-color: lightblue;
                 }
             """)
 
-            # Helper function to handle button click
-            def handleButtonClick(modelName, btn):
-                self.modelButtonClicked(modelName)
-                self.main_gui.repaint()  # Force UI update
-
             # Use lambda to pass parameters
-            btn.clicked.connect(lambda checked, modelName=modelName, btn=btn: handleButtonClick(modelName, btn))
+            btn.clicked.connect(lambda checked, modelName=modelName: self.modelButtonClicked(modelName))
 
+            # Add buttons to layout
             self.modelButtonLayout.addWidget(btn)
-
-        # Ensure the first button is selected by default (optional)
-        if self.button_group.buttons():
-            self.button_group.buttons()[0].setChecked(True)
 
     # Recreate model buttons list to add new model button
     def refreshModelButtons(self):
@@ -123,20 +116,22 @@ class ModelPanel():
 
         # Refresh list
         modelNames = self.getModelNames()
-        print(modelNames)
         modelDict = self.createAcronyms(modelNames)
-        print(modelDict)
         self.createModelButtons(modelDict)
-        print("createModelButtons")
 
     # Store current Model and Tokenizer in GUI so Prompt panel can access
-    def modelButtonClicked(self, model_name:str):
+    def modelButtonClicked(self, model_name: str):
         model_name = str(model_name)
-        print(model_name)
         script_directory = os.path.dirname(os.path.abspath(__file__))
         model_path = os.path.join(script_directory, "models", model_name)
+        
+        if not os.path.exists(model_path):
+            print("Error: Model path does not exist!")
+            return  # Prevent further errors
+
         self.main_gui.current_tokenizer = AutoTokenizer.from_pretrained(model_path)
         self.main_gui.current_model = AutoModelForCausalLM.from_pretrained(model_path)
+        self.main_gui.repaint()
 
     # Opens Download Model GUI
     def downloadModelButtonClicked(self):
@@ -147,7 +142,6 @@ class ModelPanel():
     def onModelDownloadComplete(self, success: bool, error: Optional[dict] = None):
         if success:
             self.refreshModelButtons()
-            print("refresh")
         else:
             if not error:
                 code = "N/A"
