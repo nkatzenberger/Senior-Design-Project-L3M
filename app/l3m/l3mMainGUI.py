@@ -1,10 +1,10 @@
 import sys
 import os
+from l3m.l3mModelPanel import ModelPanel
+from l3m.l3mPromptPanel import PromptPanel
 from PyQt6.QtWidgets import *
 from PyQt6.QtCore import QThreadPool
 from typing import Optional
-from l3mModelPanel import ModelPanel
-from l3mPromptPanel import PromptPanel
 
 class GUI(QMainWindow):
     def __init__(self):
@@ -37,10 +37,3 @@ class GUI(QMainWindow):
         panelLayout.addLayout(self.ref_model_panel.modelPanel)
         panelLayout.addLayout(self.ref_prompt_panel.promptPanel)
         central_widget.setLayout(panelLayout)
-
-#entry point for testing, code inside is how you would start GUI
-if __name__ == "__main__":
-    app = QApplication(sys.argv)
-    window = GUI()
-    window.show()
-    sys.exit(app.exec())

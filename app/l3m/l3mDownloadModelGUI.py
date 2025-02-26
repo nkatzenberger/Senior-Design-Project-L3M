@@ -1,8 +1,8 @@
 import os
+from l3m.l3mDownloadModel import DownloadModel
+from l3m.l3mHuggingFaceModelsAPI import HuggingFaceModelsAPI
 from PyQt6.QtWidgets import *
 from PyQt6.QtCore import Qt, QEvent, QThreadPool, QMetaObject
-from l3mDownloadModel import DownloadModel
-from l3mHuggingFaceModelsAPI import HuggingFaceModelsAPI
 
 class DownloadModelGUI(QDialog):
     def __init__(self, model_panel, main_gui, parent=None):

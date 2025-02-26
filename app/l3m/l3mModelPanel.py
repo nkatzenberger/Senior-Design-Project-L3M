@@ -1,8 +1,8 @@
 import os
+from l3m.l3mDownloadModelGUI import DownloadModelGUI
 from typing import Optional
 from PyQt6.QtWidgets import QPushButton, QVBoxLayout, QMessageBox, QButtonGroup
 from PyQt6.QtCore import Qt
-from l3mDownloadModelGUI import DownloadModelGUI
 from transformers import AutoModelForCausalLM, AutoTokenizer
 
 class ModelPanel():
@@ -61,7 +61,8 @@ class ModelPanel():
 
     # Get the names of all installed models
     def getModelNames(self):
-        models_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'models')
+        base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))  # Moves up from "app/l3m" to "app"
+        models_dir = os.path.join(base_dir, 'models')
         
         if not os.path.exists(models_dir):
             print("Models directory does not exist!")
