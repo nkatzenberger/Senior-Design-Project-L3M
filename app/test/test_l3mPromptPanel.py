@@ -1,4 +1,5 @@
 from l3m.l3mPromptPanel import PromptPanel
+from l3m.l3mPromptModel import PromptModel
 import pytest
 from PyQt6.QtCore import Qt
 from PyQt6.QtWidgets import QMessageBox, QApplication

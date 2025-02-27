@@ -10,9 +10,9 @@ def test_create_acronyms():
     
     model_names = ["my_model", "another_example_model", "test_model"]
     expected_acronyms = {
-        "MM": "my_model",
+        "MML": "my_model",
         "AEM": "another_example_model",
-        "TM": "test_model"
+        "TML": "test_model"
     }
     
     acronyms = model_panel.createAcronyms(model_names)

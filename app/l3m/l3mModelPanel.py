@@ -53,7 +53,7 @@ class ModelPanel():
 
             # Ensure the acronym is at least 3 characters long
             while len(finalAcro) < 3:
-                finalAcro += name[len(finalAcro)].upper()
+                finalAcro += name[len(name)].upper()
 
             acronyms[finalAcro] = name
         print("Acronyms created:", acronyms)
