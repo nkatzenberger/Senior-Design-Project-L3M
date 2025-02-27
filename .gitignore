@@ -10,7 +10,7 @@
 /app/offload
 /app/__pycache__
 /app/.pytest_cache
-
+/app/test/__pycache__
 
 /app/l3m/__pycache__
 
