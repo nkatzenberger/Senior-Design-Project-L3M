@@ -9,29 +9,29 @@ jobs:
     docker:
       - image: cimg/python:3.12.3
     working_directory: ~/project/Senior-Design-Project-L3M/app
+    environment:
+      QT_QPA_PLATFORM: minimal
+      DISPLAY: ":99"
+      QT_DEBUG_PLUGINS: 1
     steps:
       - checkout:
           path: ~/project/Senior-Design-Project-L3M
+          fetch-depth: 0
       - run:
-          name: Install system dependencies (Qt & OpenGL)
+          name: Install system dependencies (Qt, OpenGL, X11)
           command: |
             sudo apt-get update
-            sudo apt-get install -y libegl1 libegl1-mesa libopengl0 libqt6gui6 libxkbcommon-x11-0 xvfb
+            sudo apt-get install -y libegl1 libegl1-mesa libopengl0 libqt6gui6 libxkbcommon-x11-0 xvfb libxcb-xfixes0 libxcb1
       - run:
           name: Start virtual display (Xvfb)
           command: Xvfb :99 -screen 0 1920x1080x24 &
       - run:
-          name: Set DISPLAY environment variable
-          command: |
-            export DISPLAY=:99
-            export QT_QPA_PLATFORM=offscreen
-            export QT_DEBUG_PLUGINS=1
-      - run:
           name: Install Python dependencies
           command: pip install -r requirements.txt
       - run:
-          name: Run tests
-          command: pytest test/ --junitxml=test-results/junit.xml || { [ $? -eq 5 ] && echo 'Did not find any tests to run.'; }
+          name: Run tests with virtual display
+          command: |
+            pytest test/ --junitxml=test-results/junit.xml || { [ $? -eq 5 ] && echo 'Did not find any tests to run.'; }
       - store_test_results:
           path: test-results
 
