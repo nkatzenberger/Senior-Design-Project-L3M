@@ -1,13 +1,9 @@
 # Test cases for DownloadModelGUI class
-import os
-import sys
 import pytest
 from PyQt6.QtWidgets import QApplication, QPushButton
 from PyQt6.QtTest import QTest
 from PyQt6.QtCore import Qt, QPoint
 from unittest.mock import MagicMock
-
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from l3m.l3mDownloadModelGUI import DownloadModelGUI
 
 
