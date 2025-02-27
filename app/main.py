@@ -1,7 +1,8 @@
 import os
 import sys
 from PyQt6.QtWidgets import QApplication
-from l3m.l3mMainGUI import GUI  # Import directly from the package
+from l3m.l3mMainGUI import GUI
+from utils.path_utils import get_models_path
 
 # App startup configurations
 def setup_environment():
@@ -11,14 +12,10 @@ def setup_environment():
     os.environ["TOKENIZERS_PARALLELISM"] = "false"
 
     # Check for or Create required directories
-    required_dirs = ["models"] # add other dirs here as needed
-    for directory in required_dirs:
-        if not os.path.exists(directory):
-            os.makedirs(directory)
-            print(f"Created directory: {directory}")
+    models_dir = get_models_path()
+    print(f"Created directory: {models_dir}")
 
 def main():
-    setup_environment() #Run setup before launching GUI
     app = QApplication(sys.argv)
     
     # Create the main window (GUI)
@@ -30,4 +27,5 @@ def main():
 
 # Entry point for running the app
 if __name__ == "__main__":
+    setup_environment() #Run setup before launching GUI
     main()
