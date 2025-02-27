@@ -4,33 +4,35 @@ version: 2.1
 orbs:
   python: circleci/python@2
 jobs:
-  test-python:
+  test-app:
     # Install dependencies and run tests
     docker:
-      - image: cimg/python:3.8-node
-    working_directory: ~/project/webServer/backend
+      - image: cimg/python:3.12.3
+    working_directory: ~/project/Senior-Design-Project-L3M/app
     steps:
       - checkout:
           path: ~/project
-      - python/install-packages
+      - run:
+          name: Install dependencies
+      -   command: pip install --no-cache-dir -r requirements.txt
       - run:
           name: Run tests
-          command: pytest --junitxml=junit.xml || ((($? == 5)) && echo 'Did not find any tests to run.')
+          command: pytest test/ --junitxml=junit.xml || ((($? == 5)) && echo 'Did not find any tests to run.')
       - store_test_results:
           path: junit.xml
-  deploy:
-    # This is an example deploy job, not actually used by the workflow
-    docker:
-      - image: cimg/base:stable
-    steps:
+#  deploy:
+     #This is an example deploy job, not actually used by the workflow
+#    docker:
+#      - image: cimg/base:stable
+#    steps:
       # Replace this with steps to deploy to users
-      - run:
-          name: deploy
-          command: '#e.g. ./deploy.sh'
+#      - run:
+#          name: deploy
+#          command: '#e.g. ./deploy.sh'
 workflows:
   build-and-test:
     jobs:
-      - test-python
+      - test-app
     # - deploy:
     #     requires:
     #       - test-python
