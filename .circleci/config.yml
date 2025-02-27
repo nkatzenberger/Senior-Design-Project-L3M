@@ -19,10 +19,13 @@ jobs:
             sudo apt-get install -y libegl1 libegl1-mesa libopengl0 libqt6gui6 libxkbcommon-x11-0 xvfb
       - run:
           name: Start virtual display (Xvfb)
-          command: Xvfb :99 -screen 0 1920x1080x24 &  # Starts a virtual display
+          command: Xvfb :99 -screen 0 1920x1080x24 &
       - run:
           name: Set DISPLAY environment variable
-          command: export DISPLAY=:99  # Directs GUI output to Xvfb
+          command: |
+            export DISPLAY=:99
+            export QT_QPA_PLATFORM=offscreen
+            export QT_DEBUG_PLUGINS=1
       - run:
           name: Install Python dependencies
           command: pip install -r requirements.txt
