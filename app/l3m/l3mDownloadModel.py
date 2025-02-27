@@ -12,8 +12,8 @@ class DownloadModel(QThread):
 
         #Set model install destination
         self.model_name = model_name
-        script_directory = os.path.dirname(os.path.abspath(__file__))
-        models_folder = os.path.join(script_directory, "models")
+        app_directory = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+        models_folder = os.path.join(app_directory, "models")
         self.model_folder = os.path.join(models_folder, model_name.replace("/", "-"))
 
     def run(self):

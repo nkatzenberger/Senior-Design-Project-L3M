@@ -61,8 +61,8 @@ class ModelPanel():
 
     # Get the names of all installed models
     def getModelNames(self):
-        base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))  # Moves up from "app/l3m" to "app"
-        models_dir = os.path.join(base_dir, 'models')
+        app_directory = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))  # Moves up from "app/l3m" to "app"
+        models_dir = os.path.join(app_directory, 'models')
         
         if not os.path.exists(models_dir):
             print("Models directory does not exist!")
@@ -123,8 +123,8 @@ class ModelPanel():
     # Store current Model and Tokenizer in GUI so Prompt panel can access
     def modelButtonClicked(self, model_name: str):
         model_name = str(model_name)
-        script_directory = os.path.dirname(os.path.abspath(__file__))
-        model_path = os.path.join(script_directory, "models", model_name)
+        app_directory = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+        model_path = os.path.join(app_directory, "models", model_name)
         
         if not os.path.exists(model_path):
             print("Error: Model path does not exist!")
