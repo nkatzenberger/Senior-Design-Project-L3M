@@ -12,6 +12,7 @@ jobs:
     steps:
       - checkout:
           path: ~/project
+          fetch-depth: 0
       - run:
           name: Debug Directory Structure
           command: ls -R ~/project/Senior-Design-Project-L3M/
