@@ -11,7 +11,7 @@ def setup_environment():
     os.environ["TOKENIZERS_PARALLELISM"] = "false"
 
     # Check for or Create required directories
-    required_dirs = ["models", "logs", "offload"]
+    required_dirs = ["models"] # add other dirs here as needed
     for directory in required_dirs:
         if not os.path.exists(directory):
             os.makedirs(directory)
