@@ -15,7 +15,7 @@ jobs:
           fetch-depth: 0
       - run:
           name: Debug Directory Structure
-          command: ls -R ~/project/Senior-Design-Project-L3M/
+          command: ls -R ~/project/Senior-Design-Project-L3M/app/
       - run:
           name: Install dependencies
           command: |
