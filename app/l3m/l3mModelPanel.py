@@ -4,6 +4,7 @@ from typing import Optional
 from PyQt6.QtWidgets import QPushButton, QVBoxLayout, QMessageBox, QButtonGroup
 from PyQt6.QtCore import Qt
 from transformers import AutoModelForCausalLM, AutoTokenizer
+from utils.path_utils import get_models_path
 
 class ModelPanel():
     def __init__(self, main_gui):
@@ -69,8 +70,7 @@ class ModelPanel():
 
     # Get the names of all installed models
     def getModelNames(self):
-        app_directory = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))  # Moves up from "app/l3m" to "app"
-        models_dir = os.path.join(app_directory, 'models')
+        models_dir = get_models_path()
         
         if not os.path.exists(models_dir):
             print("Models directory does not exist!")
@@ -131,8 +131,8 @@ class ModelPanel():
     # Store current Model and Tokenizer in GUI so Prompt panel can access
     def modelButtonClicked(self, model_name: str):
         model_name = str(model_name)
-        app_directory = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
-        model_path = os.path.join(app_directory, "models", model_name)
+        models_dir = get_models_path()
+        model_path = os.path.join(models_dir, model_name)
         
         if not os.path.exists(model_path):
             print("Error: Model path does not exist!")

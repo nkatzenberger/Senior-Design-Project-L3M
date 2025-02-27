@@ -2,6 +2,7 @@ import os
 import shutil
 from PyQt6.QtCore import QThread, pyqtSignal
 from transformers import AutoModel, AutoTokenizer, AutoConfig
+from utils.path_utils import get_models_path
 
 class DownloadModel(QThread):
     model_download_complete = pyqtSignal(bool, str, dict)
@@ -12,9 +13,8 @@ class DownloadModel(QThread):
 
         #Set model install destination
         self.model_name = model_name
-        app_directory = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
-        models_folder = os.path.join(app_directory, "models")
-        self.model_folder = os.path.join(models_folder, model_name.replace("/", "-"))
+        models_dir = get_models_path()
+        self.model_folder = os.path.join(models_dir, model_name.replace("/", "-"))
 
     def run(self):
         try:
