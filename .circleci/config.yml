@@ -12,10 +12,11 @@ jobs:
     steps:
       - checkout:
           path: ~/project/Senior-Design-Project-L3M
-          fetch-depth: 0
       - run:
-          name: Debug Directory Structure
-          command: ls -R ~/project/Senior-Design-Project-L3M/
+          name: Install system dependencies (Qt & OpenGL)
+          command: |
+            sudo apt-get update
+            sudo apt-get install -y libegl1 libegl1-mesa libopengl0 libqt6gui6 libxkbcommon-x11-0
       - run:
           name: Install dependencies
           command: |
