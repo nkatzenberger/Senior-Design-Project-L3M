@@ -23,7 +23,7 @@ jobs:
             pip install -r requirements.txt
       - run:
           name: Run tests
-          command: pytest test/ --junitxml=test-results/junit.xml || ((($? == 5)) && echo 'Did not find any tests to run.'))
+          command: pytest test/ --junitxml=test-results/junit.xml || { [ $? -eq 5 ] && echo 'Did not find any tests to run.'; }
       - store_test_results:
           path: test-results
 
