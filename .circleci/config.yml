@@ -8,7 +8,7 @@ jobs:
   test-app:
     docker:
       - image: cimg/python:3.12.3
-    working_directory: ~/project/Senior-Design-Project-L3M/app
+    working_directory: ~/project/Senior-Design-Project-L3M/app/
     steps:
       - checkout:
           path: ~/project
