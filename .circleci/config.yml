@@ -8,14 +8,14 @@ jobs:
   test-app:
     docker:
       - image: cimg/python:3.12.3
-    working_directory: ~/project/Senior-Design-Project-L3M/app/
+    working_directory: ~/project/Senior-Design-Project-L3M/app
     steps:
       - checkout:
-          path: ~/project
+          path: ~/project/Senior-Design-Project-L3M
           fetch-depth: 0
       - run:
           name: Debug Directory Structure
-          command: ls -R ~/project/Senior-Design-Project-L3M/app/
+          command: ls -R ~/project/Senior-Design-Project-L3M/
       - run:
           name: Install dependencies
           command: |
