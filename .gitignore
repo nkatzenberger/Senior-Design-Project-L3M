@@ -2,7 +2,7 @@
 /.vscode
 /.pytest_cache
 /myenv
-
+**/__pycache__/
 
 /app/.env
 /app/models
@@ -14,8 +14,7 @@
 
 /app/l3m/__pycache__
 
-
-/app/tests/__pycache__
-/app/tests/.pytest_cache
+/app/test/__pycache__
+/app/test/.pytest_cache
 
 /webServer/backend/__pycache__

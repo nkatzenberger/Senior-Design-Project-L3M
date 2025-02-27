@@ -52,11 +52,19 @@ class ModelPanel():
                     finalAcro += name[i].upper()
 
             # Ensure the acronym is at least 3 characters long
-            while len(finalAcro) < 3:
-                finalAcro += name[len(name)].upper()
+            if len(finalAcro) == 2:
+                if len(name) > 1:
+                    finalAcro += name[len(name)-1].upper()
+                else:
+                    finalAcro += '_'
+            if len(finalAcro) == 1:
+                if len(name) > 2:
+                    finalAcro += name[len(name)-2].upper()
+                    finalAcro += name[len(name)-1].upper()
+                else:
+                    finalAcro += '__'
 
             acronyms[finalAcro] = name
-        print("Acronyms created:", acronyms)
         return acronyms
 
     # Get the names of all installed models
