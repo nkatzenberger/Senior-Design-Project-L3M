@@ -15,7 +15,7 @@ def main_gui_mock():
     """Mock the main GUI object."""
     return MagicMock()
 
-def test_import_model_panel():
+def test_import_model_panel(app):
     """Basic test to ensure ModelPanel imports correctly."""
     assert ModelPanel is not None 
 
@@ -32,7 +32,7 @@ def test_create_acronyms():
     
     assert acronyms == expected_acronyms
 
-def test_get_model_names_existing(app, main_gui_mock):
+def test_get_model_names_existing(main_gui_mock):
     """Test getModelNames() with existing models."""
     model_panel = ModelPanel(main_gui_mock)
 
@@ -74,7 +74,7 @@ def test_get_model_names_directory_not_exist():
     # Assert that the model names returned are correct
     assert model_names == []   
 
-def test_model_button_clicked(app,main_gui_mock):
+def test_model_button_clicked(main_gui_mock):
     """Test the model button click functionality."""
     model_panel = ModelPanel(main_gui_mock)  # Mocking main_gui for this test
     model_name = "test_model"
@@ -94,7 +94,7 @@ def test_model_button_clicked(app,main_gui_mock):
             mock_tokenizer.assert_called_with(expected_model_path)
             mock_model.assert_called_with(expected_model_path)
 
-def test_on_model_download_complete_success(app):
+def test_on_model_download_complete_success():
     """Test the functionality when model download completes successfully."""
     main_gui_mock = MagicMock()
     model_panel = ModelPanel(main_gui_mock)
@@ -103,7 +103,7 @@ def test_on_model_download_complete_success(app):
         model_panel.onModelDownloadComplete(success=True)
         mock_refresh.assert_called_once()
 
-def test_on_model_download_complete_failure(app,main_gui_mock):
+def test_on_model_download_complete_failure(main_gui_mock):
     """Test the functionality when model download fails."""
     model_panel = ModelPanel(main_gui_mock)
     

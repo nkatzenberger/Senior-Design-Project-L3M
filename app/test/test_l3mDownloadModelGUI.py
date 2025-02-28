@@ -11,7 +11,9 @@ from l3m.l3mDownloadModelGUI import DownloadModelGUI
 @pytest.fixture
 def app(qtbot):
     """Fixture to create the QApplication instance."""
-    return QApplication([])
+    app = QApplication([])
+    yield app
+    app.quit()
 
 @pytest.fixture
 def download_model_gui(qtbot):
