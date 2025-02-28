@@ -35,11 +35,11 @@ def prompt_panel(main_gui_mock):
     panel.input_field = MagicMock()
     return panel
 
-def test_import_prompt_panel():
+def test_import_prompt_panel(app):
     """Basic test to ensure PromptPanel imports correctly."""
     assert PromptPanel is not None
 
-def test_add_message_user(app, prompt_panel):
+def test_add_message_user(prompt_panel):
     # Call add_message with user message
     prompt_panel.add_message("Hello", alignment=Qt.AlignmentFlag.AlignRight, user=True)
     
@@ -61,7 +61,7 @@ def test_add_message_user(app, prompt_panel):
     assert message_label.text() == "Hello"
     assert "background-color: #e1f5fe;" in message_label.styleSheet()
 
-def test_add_message_model_response(app,prompt_panel):
+def test_add_message_model_response(prompt_panel):
     
     # Call the method to add the message (for a user)
     prompt_panel.add_message("Hello", alignment=Qt.AlignmentFlag.AlignLeft, user=False)
@@ -84,13 +84,9 @@ def test_add_message_model_response(app,prompt_panel):
     assert message_label.text() == "Hello"
     assert "background-color: #c8e6c9;" in message_label.styleSheet()
 
-def test_send_message_no_model_selected(app,prompt_panel, main_gui_mock):
+def test_send_message_no_model_selected(prompt_panel):
     """Test that send_message shows a warning if no model is selected."""
     prompt_panel.input_field.setText("Hello")
-    
-    # Simulate no model selected
-    main_gui_mock.current_tokenizer = None
-    main_gui_mock.current_model = None
     
     with patch.object(QMessageBox, "warning") as mock_warning:
         prompt_panel.send_message()
@@ -100,7 +96,7 @@ def test_send_message_no_model_selected(app,prompt_panel, main_gui_mock):
             "Please select a model first"
         )
 
-def test_send_message_with_model_selected(app,prompt_panel, main_gui_mock):
+def test_send_message_with_model_selected(prompt_panel, main_gui_mock):
     #Test that send_message sends the message to the model.
     prompt_panel.input_field.text = MagicMock(return_value="Hello")
     
@@ -134,7 +130,7 @@ def test_send_message_with_model_selected(app,prompt_panel, main_gui_mock):
         # Ensure input field is cleared after sending
         prompt_panel.input_field.clear.assert_called_once()  # Verify clear() was called
 
-def test_respond_to_message(app,prompt_panel):
+def test_respond_to_message(prompt_panel):
     """Test that respond_to_message correctly adds the model's response to the chat."""
     prompt_panel.respond_to_message("Model response")
     
