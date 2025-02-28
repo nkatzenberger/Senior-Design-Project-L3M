@@ -1,5 +1,6 @@
 /.venv
 /.vscode
+/venv
 /.pytest_cache
 /myenv
 **/__pycache__/
@@ -16,5 +17,7 @@
 
 /app/test/__pycache__
 /app/test/.pytest_cache
+
+/installer/build
 
 /webServer/backend/__pycache__
