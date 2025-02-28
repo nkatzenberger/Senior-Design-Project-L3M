@@ -4,22 +4,21 @@ from PyQt6.QtWidgets import QApplication
 import pytest
 from l3m.l3mModelPanel import ModelPanel
 
-@pytest.fixture(scope="module")
-def app():
-    app = QApplication([])
-    yield app
-    app.quit()
-
 @pytest.fixture
 def main_gui_mock():
     """Mock the main GUI object."""
     return MagicMock()
 
-def test_import_model_panel(app):
+@pytest.fixture
+def model_panel(main_gui_mock):
+    """Fixture to create a ModelPanel instance with cleanup."""
+    return ModelPanel(main_gui_mock)
+
+def test_import_model_panel():
     """Basic test to ensure ModelPanel imports correctly."""
     assert ModelPanel is not None 
 
-def test_create_acronyms():
+def test_create_acronyms(model_panel):
     """Test the creation of acronyms from model names."""
     model_names = ["my_model", "another_example_model", "test_model"]
     expected_acronyms = {
@@ -94,11 +93,8 @@ def test_model_button_clicked(main_gui_mock):
             mock_tokenizer.assert_called_with(expected_model_path)
             mock_model.assert_called_with(expected_model_path)
 
-def test_on_model_download_complete_success():
+def test_on_model_download_complete_success(model_panel):
     """Test the functionality when model download completes successfully."""
-    main_gui_mock = MagicMock()
-    model_panel = ModelPanel(main_gui_mock)
-    
     with patch.object(model_panel, "refreshModelButtons") as mock_refresh:
         model_panel.onModelDownloadComplete(success=True)
         mock_refresh.assert_called_once()

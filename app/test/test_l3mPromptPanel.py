@@ -5,13 +5,6 @@ from PyQt6.QtCore import Qt
 from PyQt6.QtWidgets import QMessageBox, QApplication, QVBoxLayout, QScrollArea, QFrame, QLabel
 from unittest.mock import MagicMock, patch
 
-# Initialize the QApplication to test Qt widgets
-@pytest.fixture(scope="module")
-def app():
-    app = QApplication([])
-    yield app
-    app.quit()
-
 @pytest.fixture
 def main_gui_mock():
     """Mock the main GUI object."""

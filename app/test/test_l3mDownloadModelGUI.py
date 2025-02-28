@@ -6,20 +6,11 @@ from PyQt6.QtCore import Qt, QPoint
 from unittest.mock import MagicMock
 from l3m.l3mDownloadModelGUI import DownloadModelGUI
 
-
-
-@pytest.fixture
-def app(qtbot):
-    """Fixture to create the QApplication instance."""
-    app = QApplication([])
-    yield app
-    app.quit()
-
 @pytest.fixture
 def download_model_gui(qtbot):
     """Fixture to create the GUI instance."""
     gui = DownloadModelGUI(model_panel=MagicMock(), main_gui=MagicMock())
-    qtbot.addWidget(gui)
+    qtbot.addWidget(gui)  # Ensures proper cleanup
     return gui
 
 def test_gui_initialization(download_model_gui):
