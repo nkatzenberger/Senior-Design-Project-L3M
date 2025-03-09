@@ -11,7 +11,7 @@ ENTRY_SCRIPT = os.path.join(APP_DIR, "main.py")
 REQUIREMENTS_FILE = os.path.join(APP_DIR, "requirements.txt")
 
 # Build output locations
-BUILD_DIR = os.path.join(os.path.dirname(__file__), "build")
+BUILD_DIR = os.path.join(os.path.dirname(__file__), "output")
 SPEC_FILE = os.path.join(BUILD_DIR, "L3M.spec")
 COPIED_REQUIREMENTS_FILE = os.path.join(BUILD_DIR, "requirements_copy.txt") #Will be recoded so it can be parsed
 
@@ -91,6 +91,24 @@ def build_exe():
     
     PyInstaller.__main__.run(pyinstaller_args)
 
+# Remove unnecessary build files after compilation
+def clean_temp_files():
+    spec_file = os.path.join(BUILD_DIR, "L3M.spec")
+    temp_requirements_file = os.path.join(BUILD_DIR, "requirements_copy.txt")
+    temp_build_folder = os.path.join(BUILD_DIR, "L3M")
+
+    if os.path.exists(spec_file):
+        os.remove(spec_file)
+        print(f"Removed {spec_file}")
+
+    if os.path.exists(temp_requirements_file):
+        shutil.rmtree(temp_requirements_file)
+        print(f"Removed {temp_requirements_file}")
+
+    if os.path.exists(temp_build_folder):
+        shutil.rmtree(temp_build_folder)
+        print(f"Removed {temp_build_folder}")
+
 # Execute build process
 def main():
     clean_build()
@@ -98,6 +116,7 @@ def main():
     fix_requirements_encoding()
     print(get_hidden_imports())
     build_exe()
+    clean_temp_files()
     print(f"Build complete! .exe is located in '{BUILD_DIR}/'")
 
 if __name__ == "__main__":
