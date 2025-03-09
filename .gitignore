@@ -18,6 +18,6 @@
 /app/test/__pycache__
 /app/test/.pytest_cache
 
-/installer/build
+/installer/output
 
 /webServer/backend/__pycache__
