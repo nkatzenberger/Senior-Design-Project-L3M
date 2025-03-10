@@ -1,6 +1,10 @@
 /.venv
 /.vscode
 /venv
+<<<<<<< HEAD
+=======
+/webenv
+>>>>>>> origin/webServer-refactoring
 /.pytest_cache
 /myenv
 **/__pycache__/
@@ -20,4 +24,9 @@
 
 /installer/output
 
+<<<<<<< HEAD
 /webServer/backend/__pycache__
+=======
+/webServer/backend/__pycache__
+/webServer/backend/.env
+>>>>>>> origin/webServer-refactoring
