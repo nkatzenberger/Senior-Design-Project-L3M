@@ -1,6 +1,6 @@
 [Setup]
 AppName=L3M
-AppVersion=1.0
+AppVersion=0.1.0
 DefaultDirName={pf}\L3M
 DefaultGroupName=L3M
 OutputDir=output
@@ -20,3 +20,5 @@ Filename: "{app}\L3M.exe"; Description: "Launch L3M Desktop App"; Flags: nowait 
 
 [UninstallDelete]
 Type: filesandordirs; Name: "{app}"
+Type: filesandordirs; Name: "{localappdata}\L3M"
+

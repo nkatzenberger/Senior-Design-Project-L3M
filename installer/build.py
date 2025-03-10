@@ -26,10 +26,6 @@ def clean_build():
         shutil.rmtree(BUILD_DIR)
         print(f"Deleted {BUILD_DIR}")
 
-    if os.path.exists(SPEC_FILE):
-        os.remove(SPEC_FILE)
-        print(f"Deleted {SPEC_FILE}")
-
 # Creates a copy of requirements.txt in the build folder.
 def copy_requirements():
     if not os.path.exists(BUILD_DIR): # Ensure build directory exists
@@ -102,7 +98,7 @@ def clean_temp_files():
         print(f"Removed {spec_file}")
 
     if os.path.exists(temp_requirements_file):
-        shutil.rmtree(temp_requirements_file)
+        os.remove(temp_requirements_file)
         print(f"Removed {temp_requirements_file}")
 
     if os.path.exists(temp_build_folder):

@@ -3,6 +3,7 @@ import shutil
 from PyQt6.QtCore import QThread, pyqtSignal
 from transformers import AutoModel, AutoTokenizer, AutoConfig
 from utils.path_utils import get_models_path
+from utils.logging_utils import log_message
 
 class DownloadModel(QThread):
     model_download_complete = pyqtSignal(bool, str, dict)
@@ -20,6 +21,7 @@ class DownloadModel(QThread):
         try:
             # Ensure the save directory exists
             os.makedirs(self.model_folder, exist_ok=True)
+            log_message("info", f"Downloading model: {self.model_name}")
 
             if not self._is_running: # Stop before starting download
                 return
@@ -47,18 +49,18 @@ class DownloadModel(QThread):
             tokenizer.save_pretrained(self.model_folder)
             config.save_pretrained(self.model_folder)
             
-            print(f"Model {self.model_name} successfully downloaded and saved in {self.model_folder}.")
+            log_message("info", f"Model {self.model_name} saved at {self.model_folder}")
 
             # Emit download was successful to GUI
             self.model_download_complete.emit(True, self.model_name, {})
 
         except Exception as e:
-            print(f"Error downloading model: {e}")
+            log_message("error", f"Failed to download {self.model_name}: {e}")
 
             # If the folder exists and is partially downloaded, delete it
             if os.path.exists(self.model_folder):
                 shutil.rmtree(self.model_folder) 
-                print(f"Deleted incomplete model files at {self.model_folder}")
+                log_message("warning", f"Deleted partial model files at {self.model_folder}")
 
             # Emit failure with error details
             self.model_download_complete.emit(False, self.model_name, {
@@ -73,5 +75,5 @@ class DownloadModel(QThread):
         # If the folder exists and is partially downloaded, delete it
         if os.path.exists(self.model_folder):
             shutil.rmtree(self.model_folder)
-            print(f"Stopped download and deleted partial files at {self.model_folder}")
+            log_message("warning", f"Deleted partial model files at {self.model_folder}")
    
