@@ -9,6 +9,7 @@ from config import app
 # Set up logging
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
+STATIC_DIR = os.path.abspath('../static')
 
 # Replace with your actual Hugging Face API token
 HUGGING_FACE_API_TOKEN = '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'
@@ -66,6 +67,12 @@ def search():
 def About():
     return render_template('views/aboutUs.html')
 
+
+
+@app.route('/Aboutllms')
+def llms():
+    return render_template('views/aboutllms.html',)
+
 @app.route('/download', methods=['GET'])
 def download_file():
     try:
@@ -77,6 +84,7 @@ def download_file():
     except Exception as e:
         return f"An error occurred: {e}", 500
 
+
 if __name__ == '__main__':
-    app.run(host="localhost", port=3000)
+    app.run(host="localhost", port=5000)
 
