@@ -2,8 +2,39 @@
 
     text-align: center;
    font-family: "Noto Sans", sans-serif;
+   
 
     }
+
+.h1{
+    padding-top: 20%;
+}
+
+
+/* ==================== */
+
+
+/* aboutStyles.css */
+body {
+    transition: background-color 0.3s, color 0.3s; /* Smooth transitions */
+}
+
+/* Light Theme */
+body[data-theme="light"] {
+    background-color: #f8f9fa; /* Example light background */
+    color: #343a40; /* Example dark text */
+}
+
+/* Dark Theme */
+body[data-theme="dark"] {
+    background-color: #1a1a1a; /* Example dark background */
+    color: #e9ecef; /* Example light text */
+}
+
+
+/* ===================== */
+
+
 .download {
         position: fixed;
         top: 10px;
@@ -16,7 +47,8 @@
         font-size: 16px;
         cursor: pointer;
         margin: 4px 2px;
-        padding: 15px 32px;
+        padding: 15px 25px;
+        width: 10%;
     }
 .hugface{
     position: fixed;
