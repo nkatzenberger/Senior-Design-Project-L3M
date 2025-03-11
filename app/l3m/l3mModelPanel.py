@@ -1,5 +1,6 @@
 import os
 from l3m.l3mDownloadModelGUI import DownloadModelGUI
+from l3m.l3mLoadingIcon import AnimateIcon
 from typing import Optional
 from PyQt6.QtWidgets import QPushButton, QVBoxLayout, QMessageBox, QButtonGroup
 from PyQt6.QtCore import Qt
@@ -133,7 +134,9 @@ class ModelPanel():
         model_name = str(model_name)
         models_dir = get_models_path()
         model_path = os.path.join(models_dir, model_name)
-        
+        loading_icon = AnimateIcon()
+        loading_icon.show()
+        #add loading spinner
         if not os.path.exists(model_path):
             print("Error: Model path does not exist!")
             return  # Prevent further errors
@@ -141,6 +144,7 @@ class ModelPanel():
         self.main_gui.current_tokenizer = AutoTokenizer.from_pretrained(model_path)
         self.main_gui.current_model = AutoModelForCausalLM.from_pretrained(model_path)
         self.main_gui.repaint()
+        loading_icon.stopAnimation()
 
     # Opens Download Model GUI
     def downloadModelButtonClicked(self):
