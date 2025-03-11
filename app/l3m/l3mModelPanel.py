@@ -134,8 +134,9 @@ class ModelPanel():
         model_name = str(model_name)
         models_dir = get_models_path()
         model_path = os.path.join(models_dir, model_name)
-        loading_icon = AnimateIcon()
-        loading_icon.show()
+        overlay = AnimateIcon()
+        overlay.setWindowFlag(Qt.WindowType.Tool)
+        overlay.show()
         #add loading spinner
         if not os.path.exists(model_path):
             print("Error: Model path does not exist!")
@@ -144,7 +145,7 @@ class ModelPanel():
         self.main_gui.current_tokenizer = AutoTokenizer.from_pretrained(model_path)
         self.main_gui.current_model = AutoModelForCausalLM.from_pretrained(model_path)
         self.main_gui.repaint()
-        loading_icon.stopAnimation()
+        overlay.stopAnimation()
 
     # Opens Download Model GUI
     def downloadModelButtonClicked(self):

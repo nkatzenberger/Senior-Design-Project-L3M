@@ -16,32 +16,35 @@ class LoadingCircle(QGraphicsEllipseItem, QObject):
         self.update()
 
     def paint(self, painter, option, widget=None):
-        painter.setBrush(self.brush()) 
-        painter.drawArc(self.rect(), 0, 50 * 16)
+        painter.setPen(QColor(0, 0, 255))  
+        painter.setBrush(QBrush(QColor(0, 120, 215)))
+        painter.drawArc(self.rect(), self._start_angle * 16, self.span_angle * 16)
         
 class LoadingAnimation(QObject):
     def __init__(self, target, parent=None):
         super().__init__(parent)
         self._start_angle = 0
-        self.target = target  # The QGraphicsEllipseItem to update
+        self.target = target  
 
     def get_start_angle(self):
         return self._start_angle
     
     def set_start_angle(self, angle):
         self._start_angle = angle
-        self.target.setStartAngle(angle)
+        self.target.set_start_angle(angle)
         self.target.scene().update()
 
     start_angle = pyqtProperty(int, get_start_angle, set_start_angle)
 
 class AnimateIcon(QWidget):
-    def __init__(self):
-        super().__init__()
+    def __init__(self, parent=None):
+        super().__init__(parent, Qt.WindowType.FramelessWindowHint | Qt.WindowType.Tool)
+        self.setAttribute(Qt.WidgetAttribute.WA_TranslucentBackground)  # Transparent background
+        self.setWindowFlag(Qt.WindowType.WindowStaysOnTopHint) 
         self.scene = QGraphicsScene(self)
-        self.scene.setSceneRect(-50, -50, 100, 100)
         self.view = QGraphicsView(self.scene)
         self.view.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.view.setStyleSheet("background: black; border: none;") 
         self.setFixedSize(200, 200)
 
         self.circle_rect = QRectF(-50, -50, 100, 100)
@@ -66,5 +69,5 @@ class AnimateIcon(QWidget):
     
     def stopAnimation(self):
         self.animation.stop()
-        #self.close()
+        self.close()
        
