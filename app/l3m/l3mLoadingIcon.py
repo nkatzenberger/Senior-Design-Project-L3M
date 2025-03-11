@@ -16,9 +16,9 @@ class LoadingCircle(QGraphicsEllipseItem, QObject):
         self.update()
 
     def paint(self, painter, option, widget=None):
-        painter.setPen(QColor(0, 0, 255))  
-        painter.setBrush(QBrush(QColor(0, 120, 215)))
-        painter.drawArc(self.rect(), self._start_angle * 16, self.span_angle * 16)
+        painter.setPen(QColor(0, 0, 255))  #Blue Outline
+        painter.setBrush(QBrush(QColor(0, 120, 215))) #Fill Color
+        painter.drawArc(self.rect(), self._start_angle * 16, self.span_angle * 16) #Draws Arc
         
 class LoadingAnimation(QObject):
     def __init__(self, target, parent=None):
@@ -41,11 +41,11 @@ class AnimateIcon(QWidget):
         super().__init__(parent, Qt.WindowType.FramelessWindowHint | Qt.WindowType.Tool)
         self.setAttribute(Qt.WidgetAttribute.WA_TranslucentBackground)  # Transparent background
         self.setWindowFlag(Qt.WindowType.WindowStaysOnTopHint) 
+        self.setFixedSize(200,200)
         self.scene = QGraphicsScene(self)
         self.view = QGraphicsView(self.scene)
         self.view.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self.view.setStyleSheet("background: black; border: none;") 
-        self.setFixedSize(200, 200)
+        self.view.setStyleSheet("background: transparent; border: none;") 
 
         self.circle_rect = QRectF(-50, -50, 100, 100)
         self.loading_circle = LoadingCircle(self.circle_rect)
@@ -70,4 +70,11 @@ class AnimateIcon(QWidget):
     def stopAnimation(self):
         self.animation.stop()
         self.close()
-       
+"""if __name__ == "__main__":
+    app = QApplication(sys.argv)
+
+    # Create and show the overlay animation
+    overlay = AnimateIcon() 
+    overlay.show()
+
+    sys.exit(app.exec())"""
