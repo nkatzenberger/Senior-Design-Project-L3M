@@ -1,8 +1,11 @@
-from PyQt6.QtCore import Qt, QThreadPool, QRunnable, pyqtSignal
+from PyQt6.QtCore import QRunnable, pyqtSignal, QObject
 import os
 from transformers import AutoModelForCausalLM, AutoTokenizer
-class switchModel(QRunnable):
+
+class WorkerSignal(QObject):
     finished = pyqtSignal()  # Signal to notify when work is done
+
+class switchModel(QRunnable):
 
     def __init__(self, main_gui, callback=None, path=None, model_name = str, ):
         super().__init__()
@@ -10,6 +13,7 @@ class switchModel(QRunnable):
         self.callback = callback  # Function to call when work is done
         self.models_dir = path
         self.model_name = model_name
+        self.signals = WorkerSignal()
 
     def run(self):
         model_path = os.path.join(self.models_dir, self.model_name)
@@ -22,4 +26,5 @@ class switchModel(QRunnable):
         self.main_gui.repaint()
         
         if self.callback:
-            self.callback() 
+            self.callback()
+        self.signals.finished.emit() 

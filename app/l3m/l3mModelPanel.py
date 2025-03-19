@@ -135,9 +135,10 @@ class ModelPanel():
         self.overlay = AnimateIcon()
         self.overlay.setWindowFlag(Qt.WindowType.Tool)
         self.overlay.show()
-        thread_pool = QThreadPool.globalInstance()
-        Switch = switchModel(self.main_gui, callback=self.overlay.stopAnimation(), model_name = model_name, path = get_models_path())
-        thread_pool.start(Switch)
+        self.thread_pool = QThreadPool.globalInstance()
+        self.Switch = switchModel(self.main_gui, model_name = model_name, path = get_models_path())
+        self.Switch.signals.finished.connect(self.stop_animation)
+        self.thread_pool.start(self.Switch)
         """
         model_name = str(model_name)
         models_dir = get_models_path()
@@ -150,7 +151,10 @@ class ModelPanel():
         self.main_gui.current_tokenizer = AutoTokenizer.from_pretrained(model_path)
         self.main_gui.current_model = AutoModelForCausalLM.from_pretrained(model_path)
         self.main_gui.repaint()"""
-
+    def stop_animation(self):
+        if self.overlay:
+            self.overlay.stopAnimation()
+            self.overlay = None  # Clean up
 
     # Opens Download Model GUI
     def downloadModelButtonClicked(self):
