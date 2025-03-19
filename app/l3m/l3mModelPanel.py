@@ -1,9 +1,10 @@
 import os
 from l3m.l3mDownloadModelGUI import DownloadModelGUI
 from l3m.l3mLoadingIcon import AnimateIcon
+from l3m.l3mSwitchModels import switchModel
 from typing import Optional
 from PyQt6.QtWidgets import QPushButton, QVBoxLayout, QMessageBox, QButtonGroup
-from PyQt6.QtCore import Qt
+from PyQt6.QtCore import Qt, QThreadPool
 from transformers import AutoModelForCausalLM, AutoTokenizer
 from utils.path_utils import get_models_path
 
@@ -131,12 +132,16 @@ class ModelPanel():
 
     # Store current Model and Tokenizer in GUI so Prompt panel can access
     def modelButtonClicked(self, model_name: str):
+        self.overlay = AnimateIcon()
+        self.overlay.setWindowFlag(Qt.WindowType.Tool)
+        self.overlay.show()
+        thread_pool = QThreadPool.globalInstance()
+        Switch = switchModel(self.main_gui, callback=self.overlay.stopAnimation(), model_name = model_name, path = get_models_path())
+        thread_pool.start(Switch)
+        """
         model_name = str(model_name)
         models_dir = get_models_path()
         model_path = os.path.join(models_dir, model_name)
-        overlay = AnimateIcon()
-        overlay.setWindowFlag(Qt.WindowType.Tool)
-        overlay.show()
         #add loading spinner
         if not os.path.exists(model_path):
             print("Error: Model path does not exist!")
@@ -144,8 +149,8 @@ class ModelPanel():
 
         self.main_gui.current_tokenizer = AutoTokenizer.from_pretrained(model_path)
         self.main_gui.current_model = AutoModelForCausalLM.from_pretrained(model_path)
-        self.main_gui.repaint()
-        overlay.stopAnimation()
+        self.main_gui.repaint()"""
+
 
     # Opens Download Model GUI
     def downloadModelButtonClicked(self):
