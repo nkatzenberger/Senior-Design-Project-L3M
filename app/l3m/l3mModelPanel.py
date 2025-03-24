@@ -35,9 +35,17 @@ class ModelPanel():
         )
         self.downloadModelButton.clicked.connect(self.downloadModelButtonClicked)
 
-        # Add download buttons to layout
+        # Create Delete Model button
+        self.deleteModelButton = QPushButton("Delete Model")
+        self.deleteModelButton.setStyleSheet(
+            "background-color: #222222; color: white; font-size: 12pt; padding: 8px; border-radius: 5px;"
+        )
+        self.deleteModelButton.clicked.connect(self.deleteModelButtonClicked)
+
+        # Add buttons to layout
         self.modelPanel.addLayout(self.modelButtonLayout)
         self.modelPanel.addWidget(self.downloadModelButton)
+        self.modelPanel.addWidget(self.deleteModelButton)
 
     #Creates acronyms for model buttons
     def createAcronyms(self, modelNames: list[str]):
@@ -160,6 +168,14 @@ class ModelPanel():
     def downloadModelButtonClicked(self):
         self.download_model_widget = DownloadModelGUI(self, self.main_gui)
         self.download_model_widget.show()
+
+    # Opens Download Model GUI
+    def deleteModelButtonClicked(self):
+        if not self.main_gui.current_model:
+            QMessageBox.warning(None, "Warning", "No model selected")
+        else:
+            print('deleting model!!')
+            ##TODO: code here for deleting model
 
     # Updates model buttons after a new model is installed
     def onModelDownloadComplete(self, success: bool, error: Optional[dict] = None):
