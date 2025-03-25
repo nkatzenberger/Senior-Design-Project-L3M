@@ -2,6 +2,7 @@ from PyQt6.QtCore import QRunnable, pyqtSignal, QObject
 import os
 from transformers import AutoModelForCausalLM, AutoTokenizer
 from utils.path_utils import get_models_path
+from utils.logging_utils import log_message
 
 class WorkerSignal(QObject):
     finished = pyqtSignal()  # Signal to notify when work is done
@@ -23,6 +24,9 @@ class switchModel(QRunnable):
 
         self.main_gui.current_tokenizer = AutoTokenizer.from_pretrained(model_path)
         self.main_gui.current_model = AutoModelForCausalLM.from_pretrained(model_path)
+        self.main_gui.current_model_name = self.model_name
         self.main_gui.repaint()
+
+        log_message("info", f'Current model is now {model_path}')
 
         self.signals.finished.emit() 

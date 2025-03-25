@@ -2,11 +2,13 @@ import os
 from l3m.l3mDownloadModelGUI import DownloadModelGUI
 from l3m.l3mLoadingIcon import AnimateIcon
 from l3m.l3mSwitchModels import switchModel
+from l3m.l3mDeleteModel import DeleteModel
 from typing import Optional
 from PyQt6.QtWidgets import QPushButton, QVBoxLayout, QMessageBox, QButtonGroup
-from PyQt6.QtCore import Qt, QThreadPool
+from PyQt6.QtCore import Qt
 from transformers import AutoModelForCausalLM, AutoTokenizer
 from utils.path_utils import get_models_path
+from utils.logging_utils import log_message
 
 class ModelPanel():
     def __init__(self, main_gui):
@@ -168,13 +170,22 @@ class ModelPanel():
         self.download_model_widget = DownloadModelGUI(self, self.main_gui)
         self.download_model_widget.show()
 
-    # Opens Download Model GUI
+    # Deletes current selected model
     def deleteModelButtonClicked(self):
         if not self.main_gui.current_model:
             QMessageBox.warning(None, "Warning", "No model selected")
         else:
-            print('deleting model!!')
-            ##TODO: code here for deleting model
+            confirm = QMessageBox.question(
+                None,
+                "Confirm Deletion",
+                f"Are you sure you want to delete the model '{self.main_gui.current_model_name}'?",
+                QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No
+            )
+
+        if confirm == QMessageBox.StandardButton.Yes:
+            delete_worker = DeleteModel(self.main_gui)
+            delete_worker.signals.finished.connect(self.refreshModelButtons)
+            self.main_gui.pool.start(delete_worker)
 
     # Updates model buttons after a new model is installed
     def onModelDownloadComplete(self, success: bool, error: Optional[dict] = None):

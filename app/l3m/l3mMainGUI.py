@@ -22,6 +22,7 @@ class GUI(QMainWindow):
         # Store Global Variables
         self.current_tokenizer = None
         self.current_model = None
+        self.current_model_name = None
 
         # Set up the main window
         self.setWindowTitle("L3M GUI V 1.0.0")
