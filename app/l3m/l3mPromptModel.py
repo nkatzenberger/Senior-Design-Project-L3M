@@ -12,6 +12,7 @@ class PromptModel(QRunnable):
         self.prompt = prompt
         self.tokenizer = tokenizer
         self.model = model
+        self.device = next(model.parameters()).device
         self.signals = PromptSignals()
     
     def run(self):
@@ -26,7 +27,8 @@ class PromptModel(QRunnable):
                 padding=True,
                 truncation=True,
             )
-
+            
+            inputs = {k: v.to(self.device) for k, v in inputs.items()}
             pad_token_id = self.tokenizer.pad_token_id or self.tokenizer.eos_token_id
 
             outputs = self.model.generate(
