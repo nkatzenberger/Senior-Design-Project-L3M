@@ -37,7 +37,7 @@ class GUI(QMainWindow):
 
         # Add layouts to central panel layout
         panelLayout.addLayout(self.ref_model_panel.modelPanel)
-        panelLayout.addLayout(self.ref_prompt_panel.promptPanel)
+        panelLayout.addWidget(self.ref_prompt_panel)
         central_widget.setLayout(panelLayout)
 
         log_message("info", "GUI initialized successfully")
