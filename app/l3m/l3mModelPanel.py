@@ -46,8 +46,18 @@ class ModelPanel():
 
         # Add buttons to layout
         self.modelPanel.addLayout(self.modelButtonLayout)
-        self.modelPanel.addWidget(self.downloadModelButton)
-        self.modelPanel.addWidget(self.deleteModelButton)
+
+        # Add a vertical spacer that pushes everything below it to the bottom
+        self.modelPanel.addStretch(1)
+
+        # Add a button layout at the bottom
+        buttonLayout = QVBoxLayout()
+        buttonLayout.setSpacing(10)
+        buttonLayout.setAlignment(Qt.AlignmentFlag.AlignBottom)
+        buttonLayout.addWidget(self.downloadModelButton)
+        buttonLayout.addWidget(self.deleteModelButton)
+
+        self.modelPanel.addLayout(buttonLayout)
 
     #Creates acronyms for model buttons
     def createAcronyms(self, modelNames: list[str]):
@@ -148,6 +158,7 @@ class ModelPanel():
         self.Switch = switchModel(self.main_gui, model_name = model_name)
         self.Switch.signals.finished.connect(self.stop_animation)
         self.main_gui.pool.start(self.Switch)
+
     def stop_animation(self):
         if self.overlay:
             self.overlay.stopAnimation()
@@ -160,7 +171,7 @@ class ModelPanel():
 
         # Set fixed position relative to button
         button_pos = self.downloadModelButton.mapTo(self.main_gui.centralWidget(), self.downloadModelButton.rect().topRight())
-        self.download_model_widget.move(button_pos.x() + 10, button_pos.y())
+        self.download_model_widget.move(button_pos.x() + 20, button_pos.y() - 160)
 
         # Show it (since it's still hidden by default)
         self.download_model_widget.show()
