@@ -70,11 +70,3 @@ class AnimateIcon(QWidget):
     def stopAnimation(self):
         self.animation.stop()
         self.close()
-"""if __name__ == "__main__":
-    app = QApplication(sys.argv)
-
-    # Create and show the overlay animation
-    overlay = AnimateIcon() 
-    overlay.show()
-
-    sys.exit(app.exec())"""

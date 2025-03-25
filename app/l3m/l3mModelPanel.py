@@ -143,10 +143,9 @@ class ModelPanel():
         self.overlay = AnimateIcon()
         self.overlay.setWindowFlag(Qt.WindowType.Tool)
         self.overlay.show()
-        self.thread_pool = QThreadPool.globalInstance()
-        self.Switch = switchModel(self.main_gui, model_name = model_name, path = get_models_path())
+        self.Switch = switchModel(self.main_gui, model_name = model_name)
         self.Switch.signals.finished.connect(self.stop_animation)
-        self.thread_pool.start(self.Switch)
+        self.main_gui.pool.start(self.Switch)
         """
         model_name = str(model_name)
         models_dir = get_models_path()
