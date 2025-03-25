@@ -1,8 +1,10 @@
 import os
 from l3m.l3mDownloadModelGUI import DownloadModelGUI
+from l3m.l3mLoadingIcon import AnimateIcon
+from l3m.l3mSwitchModels import switchModel
 from typing import Optional
 from PyQt6.QtWidgets import QPushButton, QVBoxLayout, QMessageBox, QButtonGroup
-from PyQt6.QtCore import Qt
+from PyQt6.QtCore import Qt, QThreadPool
 from transformers import AutoModelForCausalLM, AutoTokenizer
 from utils.path_utils import get_models_path
 
@@ -33,9 +35,17 @@ class ModelPanel():
         )
         self.downloadModelButton.clicked.connect(self.downloadModelButtonClicked)
 
-        # Add download buttons to layout
+        # Create Delete Model button
+        self.deleteModelButton = QPushButton("Delete Model")
+        self.deleteModelButton.setStyleSheet(
+            "background-color: #222222; color: white; font-size: 12pt; padding: 8px; border-radius: 5px;"
+        )
+        self.deleteModelButton.clicked.connect(self.deleteModelButtonClicked)
+
+        # Add buttons to layout
         self.modelPanel.addLayout(self.modelButtonLayout)
         self.modelPanel.addWidget(self.downloadModelButton)
+        self.modelPanel.addWidget(self.deleteModelButton)
 
     #Creates acronyms for model buttons
     def createAcronyms(self, modelNames: list[str]):
@@ -130,22 +140,42 @@ class ModelPanel():
 
     # Store current Model and Tokenizer in GUI so Prompt panel can access
     def modelButtonClicked(self, model_name: str):
+        self.overlay = AnimateIcon()
+        self.overlay.setWindowFlag(Qt.WindowType.Tool)
+        self.overlay.show()
+        self.thread_pool = QThreadPool.globalInstance()
+        self.Switch = switchModel(self.main_gui, model_name = model_name, path = get_models_path())
+        self.Switch.signals.finished.connect(self.stop_animation)
+        self.thread_pool.start(self.Switch)
+        """
         model_name = str(model_name)
         models_dir = get_models_path()
         model_path = os.path.join(models_dir, model_name)
-        
+        #add loading spinner
         if not os.path.exists(model_path):
             print("Error: Model path does not exist!")
             return  # Prevent further errors
 
         self.main_gui.current_tokenizer = AutoTokenizer.from_pretrained(model_path)
         self.main_gui.current_model = AutoModelForCausalLM.from_pretrained(model_path)
-        self.main_gui.repaint()
+        self.main_gui.repaint()"""
+    def stop_animation(self):
+        if self.overlay:
+            self.overlay.stopAnimation()
+            self.overlay = None  # Clean up
 
     # Opens Download Model GUI
     def downloadModelButtonClicked(self):
         self.download_model_widget = DownloadModelGUI(self, self.main_gui)
         self.download_model_widget.show()
+
+    # Opens Download Model GUI
+    def deleteModelButtonClicked(self):
+        if not self.main_gui.current_model:
+            QMessageBox.warning(None, "Warning", "No model selected")
+        else:
+            print('deleting model!!')
+            ##TODO: code here for deleting model
 
     # Updates model buttons after a new model is installed
     def onModelDownloadComplete(self, success: bool, error: Optional[dict] = None):

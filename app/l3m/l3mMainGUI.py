@@ -24,7 +24,7 @@ class GUI(QMainWindow):
         self.current_model = None
 
         # Set up the main window
-        self.setWindowTitle("L3M GUI")
+        self.setWindowTitle("L3M GUI V 1.0.0")
         self.setGeometry(100, 100, 1280, 720)
 
         # Central widget that holds all UI Elements
