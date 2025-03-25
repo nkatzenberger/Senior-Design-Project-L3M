@@ -1,8 +1,8 @@
 import os
 import shutil
-import glob
+#import glob
 from PyQt6.QtCore import QRunnable, QObject, pyqtSignal
-from huggingface_hub import HUGGINGFACE_HUB_CACHE
+#from huggingface_hub import HUGGINGFACE_HUB_CACHE
 from utils.path_utils import get_models_path
 from utils.logging_utils import log_message
 
@@ -35,7 +35,7 @@ class DeleteModel(QRunnable):
                 log_message("error", f"Error deleting model: {e}")
         else:
             log_message("warning", f"Model path does not exist: {model_path}")
-
+        '''
         # Delete from hugging face cache folder
         try:
             hf_cache_dir = os.path.expanduser(HUGGINGFACE_HUB_CACHE)
@@ -51,5 +51,5 @@ class DeleteModel(QRunnable):
 
         except Exception as e:
             log_message("error", f"Error deleting from Hugging Face cache: {e}")
-
+        '''
         self.signals.finished.emit()

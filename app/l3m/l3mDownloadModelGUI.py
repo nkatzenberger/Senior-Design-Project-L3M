@@ -4,7 +4,7 @@ from l3m.l3mHuggingFaceModelsAPI import HuggingFaceModelsAPI
 from PyQt6.QtWidgets import *
 from PyQt6.QtCore import Qt, QEvent, QThreadPool, QMetaObject
 
-class DownloadModelGUI(QDialog):
+class DownloadModelGUI(QWidget):
     def __init__(self, model_panel, main_gui, parent=None):
         super().__init__(parent)
         # Create references to other classes so it can make updates to them
@@ -13,13 +13,14 @@ class DownloadModelGUI(QDialog):
 
         # Connect event filter to mainGUI
         main_gui.installEventFilter(self)
+        self.popup_offset = None
 
         #Initialize variables and get default list of models for when this gui opens
         self.query = None
 
         #Set up window
         self.setWindowTitle("Download Model")
-        self.setWindowFlags(Qt.WindowType.FramelessWindowHint | Qt.WindowType.WindowStaysOnTopHint)
+        self.setWindowFlags(Qt.WindowType.Widget | Qt.WindowType.FramelessWindowHint)
         self.setGeometry(400, 267, 400, 200)
         self.setStyleSheet("""
             QDialog {
@@ -117,9 +118,17 @@ class DownloadModelGUI(QDialog):
         else:
             print("No model selected!")
 
+    def updatePosition(self):
+        if self.popup_offset is not None and self.isVisible():
+            main_window_pos = self.main_gui.pos()
+            new_pos = main_window_pos + self.popup_offset
+            self.move(new_pos.x(), new_pos.y())
+
     #Closes GUI if user clicks outside of its geometry
     def eventFilter(self, source, event):
-        if event.type() == QEvent.Type.MouseButtonPress:
+        if event.type() == QEvent.Type.Move and source is self.main_gui:
+            self.updatePosition()
+        elif event.type() == QEvent.Type.MouseButtonPress:
             if not self.geometry().contains(event.globalPosition().toPoint()):
                 self.close()
         return super().eventFilter(source, event)
