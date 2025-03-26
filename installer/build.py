@@ -8,7 +8,7 @@ APP_DIR = os.path.join(BASE_DIR, "app")
 L3M_DIR = os.path.join(APP_DIR, "l3m")
 UTILS_DIR = os.path.join(BASE_DIR, "app", "utils")
 ENTRY_SCRIPT = os.path.join(APP_DIR, "main.py")
-REQUIREMENTS_FILE = os.path.join(APP_DIR, "requirements.txt")
+REQUIREMENTS_FILE = os.path.join(os.path.dirname(__file__), "requirements.txt")
 
 # Build output locations
 BUILD_DIR = os.path.join(os.path.dirname(__file__), "output")
