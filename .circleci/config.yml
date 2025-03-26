@@ -7,7 +7,7 @@ orbs:
 jobs:
   test-app:
     docker:
-      - image: cimg/python:3.12.3
+      - image: cimg/python:3.12.9
     working_directory: ~/project/Senior-Design-Project-L3M/app
     environment:
       QT_QPA_PLATFORM: minimal
