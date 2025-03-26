@@ -28,13 +28,8 @@ def install_torch():
             sys.executable, "-m", "pip", "install", "torch==2.6.0"
         ])
 
-def install_requirements():
-    requirements_path = os.path.join(os.path.dirname(__file__), "requirements.txt")
-    subprocess.check_call([sys.executable, "-m", "pip", "install", "-r", requirements_path])
-
 def main():
     upgrade_pip()
-    install_requirements()
     install_torch()
 
 if __name__ == "__main__":
