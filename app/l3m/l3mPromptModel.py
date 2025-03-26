@@ -1,5 +1,6 @@
 from PyQt6.QtCore import QRunnable, QObject, pyqtSignal, Qt
 from transformers import logging
+from utils.device_utils import DeviceManager
 
 class PromptSignals(QObject):
     result = pyqtSignal(str)
@@ -12,7 +13,7 @@ class PromptModel(QRunnable):
         self.prompt = prompt
         self.tokenizer = tokenizer
         self.model = model
-        self.device = next(model.parameters()).device
+        self.device = DeviceManager.get_best_device()
         self.signals = PromptSignals()
     
     def run(self):

@@ -3,9 +3,13 @@ import sys
 from PyQt6.QtWidgets import QApplication
 from l3m.l3mMainGUI import GUI
 from utils.path_utils import get_models_path
-
+import torch
 # App startup configurations
 def setup_environment():
+   
+    print(torch.cuda.is_available())  # should be True
+    print(torch.cuda.get_device_name())
+    
     print("Setting up environment...")
 
     # Disable tokenizer parallelism warnings

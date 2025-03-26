@@ -1,9 +1,9 @@
 import os
 import shutil
-import torch
 import json
 from PyQt6.QtCore import QThread, pyqtSignal
 from transformers import AutoModel, AutoTokenizer, AutoConfig
+from utils.device_utils import DeviceManager
 from utils.path_utils import get_models_path
 from utils.logging_utils import log_message
 
@@ -37,7 +37,7 @@ class DownloadModel(QThread):
                 low_cpu_mem_usage=True, # Prevents entire model being loaded into ram
                 device_map="auto",  # Automatically offloads model parts to disk if needed
                 trust_remote_code=True, #allows more models to be downloaded
-                torch_dtype=torch.float16
+                torch_dtype=DeviceManager.get_best_dtype()
             )
 
             if not self._is_running: # Stop after download

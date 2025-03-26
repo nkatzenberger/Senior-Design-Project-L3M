@@ -23,3 +23,8 @@
 
 /webServer/backend/__pycache__
 /webServer/backend/.env
+/webServer/public/
+
+/appenv
+
+/releases
