@@ -99,20 +99,15 @@ class DownloadModelGUI(QWidget):
     def downloadSelectedModel(self):
         selected_items = self.model_list.selectedItems()
         if selected_items:
-            selected_model = selected_items[0].text()
+            selected_model_name = selected_items[0].text()  # Get string name
 
-            # Retrieve the model ID from stored data
-            if hasattr(self, "fetched_model_data") and selected_model in self.fetched_model_data:
-                model_id = self.fetched_model_data[selected_model]["Model ID"]
+            if hasattr(self, "fetched_model_data") and selected_model_name in self.fetched_model_data:
+                model_metadata = self.fetched_model_data[selected_model_name]
             else:
-                print("Model ID not found for the selected model!")
+                print("Model metadata not found for the selected model!")
                 return
 
-            print(f"Downloading model: {model_id}")
-
-            self.download_model_thread = DownloadModel(model_id)
-            self.download_model_thread.model_download_complete.connect(self.model_panel.onModelDownloadComplete)
-            self.download_model_thread.start()
+            print(f"Downloading model: {model_metadata['Model ID']}")
 
             # Find and disable the button + update text
             download_button = self.sender()
@@ -120,7 +115,7 @@ class DownloadModelGUI(QWidget):
             download_button.setEnabled(False)
 
             # Start download process
-            self.download_model_thread = DownloadModel(model_id)
+            self.download_model_thread = DownloadModel(model_metadata)
             self.download_model_thread.model_download_complete.connect(self.model_panel.onModelDownloadComplete)
             self.download_model_thread.start()
 

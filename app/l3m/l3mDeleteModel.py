@@ -1,8 +1,8 @@
 import os
 import shutil
-#import glob
+import glob
+import json
 from PyQt6.QtCore import QRunnable, QObject, pyqtSignal
-#from huggingface_hub import HUGGINGFACE_HUB_CACHE
 from utils.path_utils import get_models_path
 from utils.logging_utils import log_message
 
@@ -12,44 +12,55 @@ class DeleteModelSignal(QObject):
 class DeleteModel(QRunnable):
     def __init__(self, main_gui):
         super().__init__()
-        self.models_dir = get_models_path()
-        self.model_name = main_gui.current_model_name
+        self.main_gui = main_gui
         self.signals = DeleteModelSignal()
+        self.models_dir = get_models_path()
+        self.model_folder_name = self.main_gui.current_model_name 
     
     def run(self):
-        if not self.model_name:
-            log_message("info", f"No Model Selected for deletion")
-            return
-        
-        # Delete from models folder
-        model_path = os.path.join(self.models_dir, self.model_name)
-        if os.path.exists(model_path):
-            try:
-                shutil.rmtree(model_path)
-                log_message("info", f"Model '{model_path}' successfully deleted.")
-                self.main_gui.current_model = None
-                self.main_gui.current_tokenizer = None
-                self.main_gui.current_model_name = None
-
-            except Exception as e:
-                log_message("error", f"Error deleting model: {e}")
-        else:
-            log_message("warning", f"Model path does not exist: {model_path}")
-        '''
-        # Delete from hugging face cache folder
         try:
-            hf_cache_dir = os.path.expanduser(HUGGINGFACE_HUB_CACHE)
-            matching_dirs = glob.glob(os.path.join(hf_cache_dir, "**", f"*{self.model_name}*"), recursive=True)
+            # Reconstruct full model path
+            model_path = os.path.join(self.models_dir, self.model_folder_name)
+            metadata_path = os.path.join(model_path, "metadata.json")
 
-            for path in matching_dirs:
-                if os.path.isdir(path):
-                    shutil.rmtree(path)
-                    log_message("info", f"Deleted from Hugging Face cache: {path}")
-                elif os.path.isfile(path):
-                    os.remove(path)
-                    log_message("info", f"Deleted file from Hugging Face cache: {path}")
+            if not os.path.exists(metadata_path):
+                log_message("error", f"No metadata.json found in: {model_path}")
+                return
+            
+            # Read original model ID from metadata
+            with open(metadata_path, "r") as f:
+                metadata = json.load(f)
+                model_id = metadata.get("Model ID", "")
+                if "/" not in model_id:
+                    log_message("error", f"Invalid model ID: {model_id}")
+                    return
+                author, model_name = model_id.split("/", 1)
+            
+            # 1. Delete the model folder itself
+            if os.path.exists(model_path):
+                shutil.rmtree(model_path)
+                log_message("info", f"Deleted model folder: {model_path}")
+            
+            # 2. Delete Hugging Face cached folders
+            hf_cache_dir = os.path.expanduser(os.getenv("HF_HOME", "~/.cache/huggingface"))
+            cache_paths = [
+                os.path.join(hf_cache_dir, "hub", f"models--{author}--{model_name}"),
+                os.path.join(hf_cache_dir, "hub", ".locks", f"models--{author}--{model_name}")
+            ]
+            
+            for path in cache_paths:
+                if os.path.exists(path):
+                    if os.path.isdir(path):
+                        shutil.rmtree(path)
+                    else:
+                        os.remove(path)
+                    log_message("info", f"Deleted: {path}")
 
         except Exception as e:
-            log_message("error", f"Error deleting from Hugging Face cache: {e}")
-        '''
+            log_message("error", f"Error during deletion: {e}")
+        
+        self.main_gui.current_model = None
+        self.main_gui.current_tokenizer = None
+        self.main_gui.current_model_name = None
+
         self.signals.finished.emit()

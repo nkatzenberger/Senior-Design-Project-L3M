@@ -188,10 +188,10 @@ class ModelPanel():
                 QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No
             )
 
-        if confirm == QMessageBox.StandardButton.Yes:
-            delete_worker = DeleteModel(self.main_gui)
-            delete_worker.signals.finished.connect(self.refreshModelButtons)
-            self.main_gui.pool.start(delete_worker)
+            if confirm == QMessageBox.StandardButton.Yes:
+                delete_worker = DeleteModel(self.main_gui)
+                delete_worker.signals.finished.connect(self.refreshModelButtons)
+                self.main_gui.pool.start(delete_worker)
 
     # Updates model buttons after a new model is installed
     def onModelDownloadComplete(self, success: bool, error: Optional[dict] = None):
