@@ -1,5 +1,4 @@
-import sys
-from PyQt6.QtWidgets import (QApplication, QWidget, QGraphicsScene,
+from PyQt6.QtWidgets import (QWidget, QGraphicsScene,
                              QGraphicsView, QGraphicsEllipseItem, QVBoxLayout)
 from PyQt6.QtCore import QPropertyAnimation, QRectF, QEasingCurve, Qt, QObject, pyqtProperty
 from PyQt6.QtGui import QBrush, QColor

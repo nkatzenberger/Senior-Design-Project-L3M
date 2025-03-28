@@ -1,8 +1,7 @@
-import os
 from l3m.l3mDownloadModel import DownloadModel
 from l3m.l3mHuggingFaceModelsAPI import HuggingFaceModelsAPI
-from PyQt6.QtWidgets import *
-from PyQt6.QtCore import Qt, QEvent, QThreadPool, QMetaObject, QTimer
+from PyQt6.QtWidgets import QWidget, QVBoxLayout, QLineEdit, QListWidget, QPushButton, QApplication
+from PyQt6.QtCore import Qt, QEvent, QTimer
 
 class DownloadModelGUI(QWidget):
     def __init__(self, model_panel, main_gui, parent=None):

@@ -26,8 +26,8 @@ jobs:
           name: Start virtual display (Xvfb)
           command: Xvfb :99 -screen 0 1920x1080x24 &
       - run:
-          name: Install Python dependencies
-          command: pip install -r requirements.txt
+          name: Install dependencies using build_deps.py
+          command: python app/install_deps.py
       - run:
           name: Run tests with virtual display
           command: |

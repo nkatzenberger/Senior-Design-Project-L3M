@@ -6,7 +6,8 @@ import PyInstaller.__main__
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))  # Move up to Senior-Design/
 APP_DIR = os.path.join(BASE_DIR, "app")
 L3M_DIR = os.path.join(APP_DIR, "l3m")
-UTILS_DIR = os.path.join(BASE_DIR, "app", "utils")
+UTILS_DIR = os.path.join(APP_DIR, "utils")
+LIB_DIR = os.path.join(APP_DIR, "lib")
 ENTRY_SCRIPT = os.path.join(APP_DIR, "main.py")
 REQUIREMENTS_FILE = os.path.join(os.path.dirname(__file__), "requirements.txt")
 
@@ -76,6 +77,8 @@ def build_exe():
         "--specpath", BUILD_DIR,  # Store .spec file in installer/build/
         "--add-data", f"{L3M_DIR};l3m/",  # Ensure `l3m/` folder is included
         "--add-data", f"{UTILS_DIR};utils/",  # Ensure `utils/` folder is included
+        "--add-data", f"{LIB_DIR}/torch_cpu;lib/torch_cpu", # Ensure `lib/torch_cpu` folder is included
+        "--add-data", f"{LIB_DIR}/torch_cuda;lib/torch_cuda", # Ensure `lib/torch_cuda` folder is included
     ]
 
     # Add hidden imports for all dependencies

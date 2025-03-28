@@ -6,7 +6,6 @@ from l3m.l3mDeleteModel import DeleteModel
 from typing import Optional
 from PyQt6.QtWidgets import QPushButton, QVBoxLayout, QMessageBox, QButtonGroup
 from PyQt6.QtCore import Qt
-from transformers import AutoModelForCausalLM, AutoTokenizer
 from utils.path_utils import get_models_path
 from utils.logging_utils import log_message
 
@@ -198,10 +197,9 @@ class ModelPanel():
         if success:
             self.refreshModelButtons()
         else:
-            if not error:
-                code = "N/A"
-                kind = "Unknown Error"
-                message = "No details provided."
+            code = "N/A"
+            kind = "Unknown Error"
+            message = "No details provided."
 
             # Handle the case where error is a dict
             if isinstance(error, dict):

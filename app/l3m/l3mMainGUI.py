@@ -1,10 +1,7 @@
-import sys
-import os
 from l3m.l3mModelPanel import ModelPanel
 from l3m.l3mPromptPanel import PromptPanel
-from PyQt6.QtWidgets import *
+from PyQt6.QtWidgets import QMainWindow, QWidget, QHBoxLayout
 from PyQt6.QtCore import QThreadPool
-from typing import Optional
 from utils.logging_utils import log_message
 
 class GUI(QMainWindow):
@@ -22,7 +19,7 @@ class GUI(QMainWindow):
         # Store Global Variables
         self.current_tokenizer = None
         self.current_model = None
-        self.current_model_name = None
+        self.current_metadata = None
 
         # Set up the main window
         self.setWindowTitle("L3M GUI V 1.0.0")

@@ -1,6 +1,6 @@
 from l3m.l3mPromptModel import PromptModel
 from PyQt6.QtWidgets import QPushButton, QScrollArea, QLineEdit, QHBoxLayout, QLabel, QFrame, QWidget, QVBoxLayout, QMessageBox
-from PyQt6.QtCore import Qt
+from PyQt6.QtCore import Qt, QTimer
 
 
 class PromptPanel(QWidget):
@@ -114,7 +114,7 @@ class PromptPanel(QWidget):
     # Function that sends users prompt to the model
     def send_message(self):
         user_message = self.input_field.text().strip()
-
+        
         if not user_message:
             return  # Avoid triggering if there's no user input
         elif not self.main_gui.current_tokenizer or not self.main_gui.current_model:
@@ -125,7 +125,7 @@ class PromptPanel(QWidget):
             )
         elif user_message:
             self.add_message(user_message, alignment=Qt.AlignmentFlag.AlignRight, user=True)
-            prompt_model = PromptModel(user_message, self.main_gui.current_tokenizer, self.main_gui.current_model)
+            prompt_model = PromptModel(user_message, self.main_gui)
             prompt_model.signals.result.connect(self.respond_to_message)
             self.main_gui.pool.start(prompt_model) #THIS IS WHERE USER QUERRY GETS SENT TO MODEL
             self.input_field.clear()

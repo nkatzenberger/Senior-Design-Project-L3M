@@ -1,6 +1,5 @@
 import os
 import shutil
-import glob
 import json
 from PyQt6.QtCore import QRunnable, QObject, pyqtSignal
 from utils.path_utils import get_models_path
@@ -19,22 +18,17 @@ class DeleteModel(QRunnable):
     
     def run(self):
         try:
-            # Reconstruct full model path
+            # Get Model ID from metadata
             model_path = os.path.join(self.models_dir, self.model_folder_name)
-            metadata_path = os.path.join(model_path, "metadata.json")
 
-            if not os.path.exists(metadata_path):
-                log_message("error", f"No metadata.json found in: {model_path}")
+            metadata = self.main_gui.current_metadata
+            model_id = metadata.get("Model ID", "")
+
+            if not model_id or "/" not in model_id:
+                log_message("error", f"Invalid or missing model ID in metadata: {model_id}")
                 return
-            
-            # Read original model ID from metadata
-            with open(metadata_path, "r") as f:
-                metadata = json.load(f)
-                model_id = metadata.get("Model ID", "")
-                if "/" not in model_id:
-                    log_message("error", f"Invalid model ID: {model_id}")
-                    return
-                author, model_name = model_id.split("/", 1)
+
+            author, model_name = model_id.split("/", 1)
             
             # 1. Delete the model folder itself
             if os.path.exists(model_path):
