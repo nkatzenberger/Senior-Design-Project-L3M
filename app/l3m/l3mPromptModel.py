@@ -7,11 +7,6 @@ class PromptSignals(QObject):
     result = pyqtSignal(str)
 
 class PromptModel(QRunnable):
-    __slots__ = (
-        'prompt', 'main_gui', 'device', 'max_length',
-        'signals', 'tokenizer', 'model', 'metadata'
-    )
-
     def __init__(self, prompt, main_gui):
         super().__init__()
         self.torch, _ = TorchLoader.load()
