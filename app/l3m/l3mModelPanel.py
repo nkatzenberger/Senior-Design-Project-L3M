@@ -26,7 +26,7 @@ class ModelPanel():
         self.modelButtonLayout.setAlignment(Qt.AlignmentFlag.AlignHCenter)
 
         # Create model buttons
-        modelDict = self.createAcronyms(self.getModelNames())
+        modelDict = ModelPanel.createAcronyms(ModelPanel.getModelNames())
         self.createModelButtons(modelDict)
 
         # Create Download Model button
@@ -59,7 +59,8 @@ class ModelPanel():
         self.modelPanel.addLayout(buttonLayout)
 
     #Creates acronyms for model buttons
-    def createAcronyms(self, modelNames: list[str]):
+    @staticmethod
+    def createAcronyms(modelNames: list[str]) -> dict[str, str]:
         acronyms = {}
         for name in modelNames:
             # Initialize acronym with the first character
@@ -90,7 +91,8 @@ class ModelPanel():
         return acronyms
 
     # Get the names of all installed models
-    def getModelNames(self):
+    @staticmethod
+    def getModelNames():
         models_dir = get_models_path()
         
         if not os.path.exists(models_dir):
@@ -145,8 +147,8 @@ class ModelPanel():
                 item.widget().deleteLater()
 
         # Refresh list
-        modelNames = self.getModelNames()
-        modelDict = self.createAcronyms(modelNames)
+        modelNames = ModelPanel.getModelNames()
+        modelDict = ModelPanel.createAcronyms(modelNames)
         self.createModelButtons(modelDict)
 
     # Store current Model and Tokenizer in GUI so Prompt panel can access

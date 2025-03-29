@@ -56,9 +56,7 @@ class DownloadModel(QThread):
             config.save_pretrained(self.model_folder)
 
             # Save metadata as JSON
-            metadata_path = os.path.join(self.model_folder, "metadata.json")
-            with open(metadata_path, "w") as f:
-                json.dump(self.model_metadata, f, indent=4)
+            self._save_metadata()
             
             log_message("info", f"Model {self.model_id} saved at {self.model_folder}")
 
@@ -79,6 +77,12 @@ class DownloadModel(QThread):
                 "kind": type(e).__name__,
                 "message": str(e)
             })
+
+    def _save_metadata(self):
+        os.makedirs(self.model_folder, exist_ok=True)
+        metadata_path = os.path.join(self.model_folder, "metadata.json")
+        with open(metadata_path, "w") as f:
+            json.dump(self.model_metadata, f, indent=4)
 
     def stop(self):
         self._is_running = False
