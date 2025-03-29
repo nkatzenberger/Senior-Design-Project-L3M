@@ -7,7 +7,7 @@ orbs:
 jobs:
   test-app:
     docker:
-      - image: cimg/python:3.12.3
+      - image: cimg/python:3.12.9
     working_directory: ~/project/Senior-Design-Project-L3M/app
     environment:
       QT_QPA_PLATFORM: minimal
@@ -26,12 +26,14 @@ jobs:
           name: Start virtual display (Xvfb)
           command: Xvfb :99 -screen 0 1920x1080x24 &
       - run:
-          name: Install Python dependencies
-          command: pip install -r requirements.txt
+          name: Install dependencies using build_deps.py
+          command: python install_deps.py
       - run:
           name: Run tests with virtual display
           command: |
-            pytest test/ --junitxml=test-results/junit.xml || { [ $? -eq 5 ] && echo 'Did not find any tests to run.'; }
+            export FORCE_CPU_TORCH=1
+            python -m pytest test/ --junitxml=test-results/junit.xml || { [ $? -eq 5 ] && echo 'Did not find any tests to run.'; }
+
       - store_test_results:
           path: test-results
 

@@ -1,47 +1,70 @@
-from PyQt6.QtCore import QRunnable, QObject, pyqtSignal, Qt
+from PyQt6.QtCore import QRunnable, QObject, pyqtSignal
 from transformers import logging
+from utils.device_utils import DeviceManager
+from utils.logging_utils import log_message
+import time
 
 class PromptSignals(QObject):
     result = pyqtSignal(str)
 
 class PromptModel(QRunnable):
-    def __init__(self, prompt, tokenizer, model):
+    def __init__(self, prompt, main_gui):
         super().__init__()
         logging.set_verbosity_error()
         self.max_length = 500
         self.prompt = prompt
-        self.tokenizer = tokenizer
-        self.model = model
+        self.device = DeviceManager.get_best_device()
         self.signals = PromptSignals()
+
+        # Strong references to avoid GC issues
+        self.tokenizer = main_gui.current_tokenizer
+        self.model = main_gui.current_model
+        self.metadata = main_gui.current_metadata
     
     def run(self):
         try:
-            if self.tokenizer.pad_token is None:
-                self.tokenizer.add_special_tokens({'pad_token': '[PAD]'})
-                self.model.resize_token_embeddings(len(self.tokenizer))
+            log_message("info", "PromptModel thread started...")
+            start = time.time()
 
+            context_length = getattr(self.model.config, "max_position_embeddings", 1024)
+            
             inputs = self.tokenizer(
                 self.prompt,
-                return_tensors="pt",
-                padding=True,
-                truncation=True,
+                return_tensors="pt",             # Output as PyTorch tensors
+                padding=True,            # Pad to a fixed length (so model input is consistent)
+                truncation=True,                 # Truncate if prompt is too long
+                max_length=context_length,     # Set based on your model’s context window
+                add_special_tokens=True,         # Adds <BOS>, <EOS>, etc., depending on model
+                return_attention_mask=True       # Needed for attention masking during generation
             )
+            log_message("info", f"Inputs created on device: {self.model.device}")
+            
+            inputs = {k: v.to(self.device) for k, v in inputs.items()}
 
-            pad_token_id = self.tokenizer.pad_token_id or self.tokenizer.eos_token_id
-
-            outputs = self.model.generate(
-                inputs["input_ids"],
-                attention_mask=inputs["attention_mask"],
-                max_length = self.max_length,
-                num_return_sequences=1,
-                repetition_penalty=1.2,
-                no_repeat_ngram_size=3,
-                pad_token_id=pad_token_id,
-                eos_token_id=self.tokenizer.eos_token_id,
-            )
+            try:
+                outputs = self.model.generate(
+                    input_ids=inputs["input_ids"],
+                    attention_mask=inputs["attention_mask"],
+                    max_new_tokens=512,
+                    do_sample=True,
+                    top_p=0.9,
+                    temperature=0.8,
+                    repetition_penalty=1.1,
+                    eos_token_id=self.tokenizer.eos_token_id,
+                    pad_token_id=self.tokenizer.pad_token_id
+                )
+                log_message("info", f"Model.generate() completed in {time.time() - start:.2f}s")
+            except Exception as e:
+                log_message("error", f"model.generate() crashed: {e}")
+                self.signals.result.emit(f"Model crashed during generation: {e}")
+                return
 
             response = self.tokenizer.decode(outputs[0], skip_special_tokens=True)
+            log_message("info", f"Decoded response: {response[:10]}...")
+
         except Exception as e:
+            log_message("error", f"Exception in PromptModel: {e}")
             response = f'Error: Failed to Prompt Model; {e}'
 
         self.signals.result.emit(response)
+        return

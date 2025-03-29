@@ -13,6 +13,7 @@
 /app/__pycache__
 /app/.pytest_cache
 /app/test/__pycache__
+/app/lib
 
 /app/l3m/__pycache__
 
@@ -23,3 +24,8 @@
 
 /webServer/backend/__pycache__
 /webServer/backend/.env
+/webServer/public/
+
+/appenv
+
+/releases
