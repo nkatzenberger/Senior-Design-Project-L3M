@@ -4,6 +4,7 @@ import shutil
 import torch
 from unittest.mock import MagicMock, patch
 from l3m.l3mDownloadModel import DownloadModel
+from utils.device_utils import DeviceManager
 
 @pytest.fixture
 def mock_hf_objects():
@@ -63,7 +64,7 @@ def test_successful_download(download_model, mock_hf_objects, mock_os_functions)
         low_cpu_mem_usage=True, 
         device_map="auto", 
         trust_remote_code=True,
-        torch_dtype=torch.float16
+        torch_dtype=DeviceManager.get_best_dtype()
     )
     mock_tokenizer.assert_called_once_with("fake-model")
     mock_config.assert_called_once_with("fake-model")
