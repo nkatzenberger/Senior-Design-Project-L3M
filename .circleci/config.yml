@@ -31,7 +31,9 @@ jobs:
       - run:
           name: Run tests with virtual display
           command: |
+            export FORCE_CPU_TORCH=1
             python -m pytest test/ --junitxml=test-results/junit.xml || { [ $? -eq 5 ] && echo 'Did not find any tests to run.'; }
+
       - store_test_results:
           path: test-results
 

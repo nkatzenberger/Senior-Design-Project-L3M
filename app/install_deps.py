@@ -18,14 +18,22 @@ def install_requirements():
         print("Failed to install some packages from requirements.txt")
         print("    Error:", str(e))
 
+
 def install_torch_cpu():
     if os.path.exists(os.path.join(TORCH_CPU_DIR, "torch")):
         print("torch_cpu already exists, skipping...")
         return
-    print("Installing torch==2.6.0 (CPU) into lib/torch_cpu...")
+
+    print("Installing torch==2.2.2+cpu into lib/torch_cpu...")
     try:
         subprocess.check_call([
-            sys.executable, "-m", "pip", "install", "--no-deps", "torch==2.6.0",
+            sys.executable, "-m", "pip", "install", "--no-deps",
+            "torch==2.2.2+cpu",
+            "torchvision==0.17.2",
+            "transformers==4.38.2",
+            "tokenizers>=0.14,<0.19",
+            "numpy<2",
+            "-f", "https://download.pytorch.org/whl/cpu/torch_stable.html",
             f"--target={TORCH_CPU_DIR}"
         ])
         print("torch_cpu installed.\n")
@@ -40,15 +48,15 @@ def install_torch_cuda():
     print("Installing torch==2.6.0+cu118 (CUDA) into lib/torch_cuda...")
     try:
         subprocess.check_call([
-            sys.executable, "-m", "pip", "install", "torch==2.6.0+cu118",
+            sys.executable, "-m", "pip", "install", "--no-deps", 
+            "torch==2.6.0+cu118",
             "--index-url", "https://download.pytorch.org/whl/cu118",
-            "--no-deps",
             "-f", "https://download.pytorch.org/whl/cu118",
             f"--target={TORCH_CUDA_DIR}",
         ])
         print("torch_cuda installed.\n")
     except subprocess.CalledProcessError as e:
-        print("❌ Failed to install torch_cuda. This system may not support CUDA.")
+        print("Failed to install torch_cuda. This system may not support CUDA.")
         print("    Error:", str(e))
 
 def main():

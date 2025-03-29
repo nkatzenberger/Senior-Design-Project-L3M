@@ -25,13 +25,15 @@ class PromptModel(QRunnable):
         try:
             log_message("info", "PromptModel thread started...")
             start = time.time()
+
+            context_length = getattr(self.model.config, "max_position_embeddings", 1024)
             
             inputs = self.tokenizer(
                 self.prompt,
                 return_tensors="pt",             # Output as PyTorch tensors
-                padding="max_length",            # Pad to a fixed length (so model input is consistent)
+                padding=True,            # Pad to a fixed length (so model input is consistent)
                 truncation=True,                 # Truncate if prompt is too long
-                max_length=1024,                 # Set based on your model’s context window
+                max_length=context_length,     # Set based on your model’s context window
                 add_special_tokens=True,         # Adds <BOS>, <EOS>, etc., depending on model
                 return_attention_mask=True       # Needed for attention masking during generation
             )

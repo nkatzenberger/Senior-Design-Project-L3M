@@ -36,7 +36,7 @@ class TorchLoader:
             import torch  # fresh import after sys.path change
             cls._torch = torch
             cls._device = torch.device("cpu")
-            print("🧠 Using CPU torch from:", cpu_path)
+            print("Using CPU torch from:", cpu_path)
 
         # Ensure consistency
         sys.modules["torch"] = cls._torch

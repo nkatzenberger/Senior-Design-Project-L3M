@@ -45,7 +45,7 @@ class switchModel(QRunnable):
         self.main_gui.current_tokenizer = AutoTokenizer.from_pretrained(model_path)
         model_selected = AutoModelForCausalLM.from_pretrained(
             model_path,
-            torch_dtype=torch.float16,
+            torch_dtype=DeviceManager.get_best_dtype(),
             low_cpu_mem_usage=True
         ).to(self.device)
 
