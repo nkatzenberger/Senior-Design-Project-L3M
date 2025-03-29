@@ -1,6 +1,6 @@
 from l3m.l3mPromptModel import PromptModel
 from PyQt6.QtWidgets import QPushButton, QScrollArea, QLineEdit, QHBoxLayout, QLabel, QFrame, QWidget, QVBoxLayout, QMessageBox
-from PyQt6.QtCore import Qt, QTimer
+from PyQt6.QtCore import Qt
 
 
 class PromptPanel(QWidget):

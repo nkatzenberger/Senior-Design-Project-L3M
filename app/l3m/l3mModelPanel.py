@@ -180,10 +180,12 @@ class ModelPanel():
         if not self.main_gui.current_model:
             QMessageBox.warning(None, "Warning", "No model selected")
         else:
+            metadata = self.main_gui.current_metadata
+            model_id = metadata.get("Model ID", "")
             confirm = QMessageBox.question(
                 None,
                 "Confirm Deletion",
-                f"Are you sure you want to delete the model '{self.main_gui.current_model_name}'?",
+                f"Are you sure you want to delete the model '{model_id}'?",
                 QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No
             )
 

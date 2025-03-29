@@ -1,7 +1,9 @@
 import os
 import sys
+import utils.torch_loader
 from PyQt6.QtWidgets import QApplication
 from l3m.l3mMainGUI import GUI
+
 from utils.path_utils import get_models_path
 
 def setup_environment():

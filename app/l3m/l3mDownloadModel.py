@@ -2,6 +2,8 @@ import os
 import shutil
 import json
 from PyQt6.QtCore import QThread, pyqtSignal
+from transformers import AutoModel, AutoTokenizer, AutoConfig
+from utils.device_utils import DeviceManager
 from utils.path_utils import get_models_path
 from utils.logging_utils import log_message
 
@@ -22,11 +24,6 @@ class DownloadModel(QThread):
 
     def run(self):
         try:
-            from utils.torch_loader import TorchLoader
-            torch, _ = TorchLoader.load()
-            from utils.device_utils import DeviceManager
-            from transformers import AutoModel, AutoTokenizer, AutoConfig
-
             # Ensure the save directory exists
             os.makedirs(self.model_folder, exist_ok=True)
             log_message("info", f"Downloading model: {self.model_id}")

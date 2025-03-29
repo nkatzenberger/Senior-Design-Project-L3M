@@ -1,5 +1,10 @@
 import os
+import gc
+import json
+import torch
 from PyQt6.QtCore import QRunnable, pyqtSignal, QObject
+from transformers import AutoModelForCausalLM, AutoTokenizer
+from utils.device_utils import DeviceManager
 from utils.path_utils import get_models_path
 from utils.logging_utils import log_message
 
@@ -15,15 +20,9 @@ class switchModel(QRunnable):
         self.models_dir = get_models_path()
         self.model_name = model_name
         self.signals = WorkerSignal()
+        self.device = DeviceManager.get_best_device()
 
     def run(self):
-        #lazy Load
-        import gc
-        import json
-        from utils.torch_loader import TorchLoader
-        self.torch, self.device = TorchLoader.load() #need to load torch before importing transformers
-        from transformers import AutoModelForCausalLM, AutoTokenizer
-
         # Unload existing model
         if self.main_gui.current_model:
             log_message("info", "Waiting for running tasks to complete before switching model...")
@@ -32,8 +31,8 @@ class switchModel(QRunnable):
             del self.main_gui.current_model
             del self.main_gui.current_tokenizer
             gc.collect()
-            if self.torch.cuda.is_available():
-                self.torch.cuda.empty_cache()
+            if torch.cuda.is_available():
+                torch.cuda.empty_cache()
             log_message("info", 'Unloaded existing model')
 
         # Error check models folder
@@ -46,7 +45,7 @@ class switchModel(QRunnable):
         self.main_gui.current_tokenizer = AutoTokenizer.from_pretrained(model_path)
         model_selected = AutoModelForCausalLM.from_pretrained(
             model_path,
-            torch_dtype=self.torch.float16,
+            torch_dtype=torch.float16,
             low_cpu_mem_usage=True
         ).to(self.device)
 

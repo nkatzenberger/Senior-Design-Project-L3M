@@ -14,7 +14,8 @@ class DeleteModel(QRunnable):
         self.main_gui = main_gui
         self.signals = DeleteModelSignal()
         self.models_dir = get_models_path()
-        self.model_folder_name = self.main_gui.current_model_name 
+        model_id = self.main_gui.current_metadata.get("Model ID", "")
+        self.model_folder_name = model_id.replace("/", "-")
     
     def run(self):
         try:
