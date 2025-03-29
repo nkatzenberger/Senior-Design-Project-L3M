@@ -9,29 +9,36 @@ class TorchLoader:
 
     @classmethod
     def load(cls):
+        use_cuda = os.environ.get("FORCE_CPU_TORCH") != "1" #For CircleCI
         cuda_path = cls._get_path("torch_cuda")
         cpu_path = cls._get_path("torch_cpu")
 
         try:
-            sys.path.insert(0, cuda_path)
-            import torch
-            if torch.cuda.is_available():
-                cls._torch = torch
-                cls._device = torch.device("cuda")
-                print("Using GPU torch")
-            else:
-                raise RuntimeError("CUDA not available")
+            if use_cuda:
+                sys.path.insert(0, cuda_path)
+                import torch
+                if torch.cuda.is_available():
+                    cls._torch = torch
+                    cls._device = torch.device("cuda")
+                    print("Using GPU torch")
+                    return
+                raise RuntimeError("CUDA not available or not detected")
+            raise RuntimeError("FORCE_CPU_TORCH is set")
         except Exception as e:
-            print(f"⚠️ Falling back to CPU torch: {e}")
+            print(f"Falling back to CPU torch: {e}")
+            # Remove the possibly-bad torch import
+            if "torch" in sys.modules:
+                del sys.modules["torch"]
             if cuda_path in sys.path:
                 sys.path.remove(cuda_path)
+
             sys.path.insert(0, cpu_path)
-            import torch
+            import torch  # fresh import after sys.path change
             cls._torch = torch
             cls._device = torch.device("cpu")
-            print("Using CPU torch")
+            print("🧠 Using CPU torch from:", cpu_path)
 
-        # Make sure every other module gets the same torch
+        # Ensure consistency
         sys.modules["torch"] = cls._torch
 
 # Automatically run on import
