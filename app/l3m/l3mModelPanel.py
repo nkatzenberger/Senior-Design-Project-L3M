@@ -6,8 +6,8 @@ from l3m.l3mDeleteModel import DeleteModel
 from typing import Optional
 from PyQt6.QtWidgets import QPushButton, QVBoxLayout, QMessageBox, QButtonGroup
 from PyQt6.QtCore import Qt
-from utils.path_utils import get_models_path
-from utils.logging_utils import log_message
+from utils.path_utils import PathManager
+from utils.logging_utils import LogManager
 
 class ModelPanel():
     def __init__(self, main_gui):
@@ -93,7 +93,7 @@ class ModelPanel():
     # Get the names of all installed models
     @staticmethod
     def getModelNames():
-        models_dir = get_models_path()
+        models_dir = PathManager.get_models_path()
         
         if not os.path.exists(models_dir):
             print("Models directory does not exist!")

@@ -2,8 +2,8 @@ import os
 import shutil
 import json
 from PyQt6.QtCore import QRunnable, QObject, pyqtSignal
-from utils.path_utils import get_models_path
-from utils.logging_utils import log_message
+from utils.path_utils import PathManager
+from utils.logging_utils import LogManager
 
 class DeleteModelSignal(QObject):
     finished = pyqtSignal()
@@ -13,7 +13,7 @@ class DeleteModel(QRunnable):
         super().__init__()
         self.main_gui = main_gui
         self.signals = DeleteModelSignal()
-        self.models_dir = get_models_path()
+        self.models_dir = PathManager.get_models_path()
         model_id = self.main_gui.current_metadata.get("Model ID", "")
         self.model_folder_name = model_id.replace("/", "-")
     
@@ -26,7 +26,7 @@ class DeleteModel(QRunnable):
             model_id = metadata.get("Model ID", "")
 
             if not model_id or "/" not in model_id:
-                log_message("error", f"Invalid or missing model ID in metadata: {model_id}")
+                LogManager.log("error", f"Invalid or missing model ID in metadata: {model_id}")
                 return
 
             author, model_name = model_id.split("/", 1)
@@ -34,7 +34,7 @@ class DeleteModel(QRunnable):
             # 1. Delete the model folder itself
             if os.path.exists(model_path):
                 shutil.rmtree(model_path)
-                log_message("info", f"Deleted model folder: {model_path}")
+                LogManager.log("info", f"Deleted model folder: {model_path}")
             
             # 2. Delete Hugging Face cached folders
             hf_cache_dir = os.path.expanduser(os.getenv("HF_HOME", "~/.cache/huggingface"))
@@ -49,10 +49,10 @@ class DeleteModel(QRunnable):
                         shutil.rmtree(path)
                     else:
                         os.remove(path)
-                    log_message("info", f"Deleted: {path}")
+                    LogManager.log("info", f"Deleted: {path}")
 
         except Exception as e:
-            log_message("error", f"Error during deletion: {e}")
+            LogManager.log("error", f"Error during deletion: {e}")
         
         self.main_gui.current_model = None
         self.main_gui.current_tokenizer = None

@@ -4,8 +4,8 @@ import json
 from PyQt6.QtCore import QThread, pyqtSignal
 from transformers import AutoModel, AutoTokenizer, AutoConfig
 from utils.device_utils import DeviceManager
-from utils.path_utils import get_models_path
-from utils.logging_utils import log_message
+from utils.path_utils import PathManager
+from utils.logging_utils import LogManager
 
 class DownloadModel(QThread):
     model_download_complete = pyqtSignal(bool, str, dict)
@@ -19,14 +19,14 @@ class DownloadModel(QThread):
         self.model_id = model_metadata["Model ID"]
         self.folder_name = self.model_id.replace("/", "-")
 
-        models_dir = get_models_path()
+        models_dir = PathManager.get_models_path()
         self.model_folder = os.path.join(models_dir, self.folder_name)
 
     def run(self):
         try:
             # Ensure the save directory exists
             os.makedirs(self.model_folder, exist_ok=True)
-            log_message("info", f"Downloading model: {self.model_id}")
+            LogManager.log("info", f"Downloading model: {self.model_id}")
 
             if not self._is_running: # Stop before starting download
                 return
@@ -58,18 +58,18 @@ class DownloadModel(QThread):
             # Save metadata as JSON
             self._save_metadata()
             
-            log_message("info", f"Model {self.model_id} saved at {self.model_folder}")
+            LogManager.log("info", f"Model {self.model_id} saved at {self.model_folder}")
 
             # Emit download was successful to GUI
             self.model_download_complete.emit(True, self.model_id, {})
 
         except Exception as e:
-            log_message("error", f"Failed to download {self.model_id}: {e}")
+            LogManager.log("error", f"Failed to download {self.model_id}: {e}")
 
             # If the folder exists and is partially downloaded, delete it
             if os.path.exists(self.model_folder):
                 shutil.rmtree(self.model_folder) 
-                log_message("warning", f"Deleted partial model files at {self.model_folder}")
+                LogManager.log("warning", f"Deleted partial model files at {self.model_folder}")
 
             # Emit failure with error details
             self.model_download_complete.emit(False, self.model_id, {
@@ -90,5 +90,5 @@ class DownloadModel(QThread):
         # If the folder exists and is partially downloaded, delete it
         if os.path.exists(self.model_folder):
             shutil.rmtree(self.model_folder)
-            log_message("warning", f"Deleted partial model files at {self.model_folder}")
+            LogManager.log("warning", f"Deleted partial model files at {self.model_folder}")
    

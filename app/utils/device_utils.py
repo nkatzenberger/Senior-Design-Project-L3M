@@ -1,5 +1,5 @@
 import torch
-from utils.logging_utils import log_message
+from utils.logging_utils import LogManager
 
 class DeviceManager:
     @staticmethod
@@ -10,7 +10,7 @@ class DeviceManager:
             major = torch.cuda.get_device_capability()[0]
             return major >= 6
         except Exception as e:
-            log_message("warning", f"Failed to check float16 support: {e}")
+            LogManager.log("warning", f"Failed to check float16 support: {e}")
             return False
 
     @staticmethod
@@ -19,8 +19,8 @@ class DeviceManager:
             dtype = torch.float16 if DeviceManager.supports_float16() else torch.float32
         except Exception as e:
             dtype = None
-            log_message("warning", f"Torch not available — dtype fallback: {e}")
-        log_message("info", f"Using dtype: {dtype}")
+            LogManager.log("warning", f"Torch not available — dtype fallback: {e}")
+        LogManager.log("info", f"Using dtype: {dtype}")
         return dtype
 
     @staticmethod
@@ -29,7 +29,7 @@ class DeviceManager:
             device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         except Exception as e:
             device = torch.device("cpu")
-            log_message("warning", f"Torch not available — using CPU: {e}")
-        log_message("info", f"Using device: {device}")
+            LogManager.log("warning", f"Torch not available — using CPU: {e}")
+        LogManager.log("info", f"Using device: {device}")
         return device
 

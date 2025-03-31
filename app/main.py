@@ -1,6 +1,6 @@
 import os
 import sys
-import utils.torch_loader
+import utils.torch_utils
 from PyQt6.QtWidgets import QApplication
 from l3m.l3mMainGUI import GUI
 

@@ -2,7 +2,7 @@ from l3m.l3mModelPanel import ModelPanel
 from l3m.l3mPromptPanel import PromptPanel
 from PyQt6.QtWidgets import QMainWindow, QWidget, QHBoxLayout
 from PyQt6.QtCore import QThreadPool
-from utils.logging_utils import log_message
+from utils.logging_utils import LogManager
 
 class GUI(QMainWindow):
     def __init__(self):
@@ -37,4 +37,4 @@ class GUI(QMainWindow):
         panelLayout.addWidget(self.ref_prompt_panel)
         central_widget.setLayout(panelLayout)
 
-        log_message("info", "GUI initialized successfully")
+        LogManager.log("info", "GUI initialized successfully")

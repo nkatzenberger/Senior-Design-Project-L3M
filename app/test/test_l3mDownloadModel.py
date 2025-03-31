@@ -30,7 +30,7 @@ def mock_os_functions():
 @pytest.fixture
 def mock_get_models_path():
     """Fixture to mock get_models_path to return a fake directory."""
-    with patch("l3m.l3mDownloadModel.get_models_path", return_value="/fake/path"):
+    with patch("utils.path_utils.PathManager.get_models_path", return_value="/fake/path"):
         yield
 
 @pytest.fixture
