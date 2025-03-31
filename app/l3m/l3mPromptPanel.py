@@ -24,21 +24,66 @@ class PromptPanel(QWidget):
 
         # Prompt input feild
         self.input_field = QLineEdit()
+        self.input_field.setStyleSheet("""
+            QLineEdit {
+                background: transparent;
+                color: white;
+                border: none;
+                border-radius: 20px;
+                padding: 6px 12px;
+                font-size: 14pt;
+            }
+            QLineEdit:focus {
+                outline: none;
+            }
+        """)
         self.input_field.setPlaceholderText("Type your message here...")
         self.input_field.returnPressed.connect(self.send_message)
 
         # Button to send Prompt to model
         self.send_button = QPushButton("Send")
+        self.send_button.setFixedSize(36, 36)  # Circle size
+        self.send_button.setStyleSheet("""
+            QPushButton {
+                background-color: #aaaaaa;
+                border: none;
+                border-radius: 18px;
+            }
+            QPushButton:hover {
+                background-color: #cccccc;
+            }
+        """)
         self.send_button.clicked.connect(self.send_message)
 
-        # Set Layout for Input Area
-        input_layout = QHBoxLayout()
-        input_layout.addWidget(self.input_field)
-        input_layout.addWidget(self.send_button)
-        
-        # Add everything to Prompt Panel Layout
+       # Create horizontal row for input field + send button
+        input_row = QHBoxLayout()
+        input_row.setContentsMargins(8, 8, 8, 8)
+        input_row.setSpacing(8)
+        input_row.addWidget(self.input_field)
+        input_row.addWidget(self.send_button)
+
+        # Create container for the row
+        self.input_container = QWidget()
+        self.input_container.setLayout(input_row)
+        self.input_container.setStyleSheet("""
+            background-color: #4f4f4f;
+            border-radius: 24px;
+        """)
+        self.input_container.setMinimumWidth(400)
+
+        # Add scroll area and input container to main layout
         self.promptPanel.addWidget(self.scroll_area)
-        self.promptPanel.addLayout(input_layout)
+        self.promptPanel.addWidget(self.input_container, alignment=Qt.AlignmentFlag.AlignHCenter)
+        self.setLayout(self.promptPanel)
+    
+    def resizeEvent(self, event):
+        super().resizeEvent(event)
+
+        # Set input container to 80% of total panel width
+        parent_width = self.parent().width()
+        desired_width = int(parent_width * 0.7)
+
+        self.input_container.setFixedWidth(desired_width)
 
     #Function for adding users prompt to chat window
     def add_message(self, message, alignment, user=False):
@@ -69,7 +114,7 @@ class PromptPanel(QWidget):
     # Function that sends users prompt to the model
     def send_message(self):
         user_message = self.input_field.text().strip()
-
+        
         if not user_message:
             return  # Avoid triggering if there's no user input
         elif not self.main_gui.current_tokenizer or not self.main_gui.current_model:
@@ -80,7 +125,7 @@ class PromptPanel(QWidget):
             )
         elif user_message:
             self.add_message(user_message, alignment=Qt.AlignmentFlag.AlignRight, user=True)
-            prompt_model = PromptModel(user_message, self.main_gui.current_tokenizer, self.main_gui.current_model)
+            prompt_model = PromptModel(user_message, self.main_gui)
             prompt_model.signals.result.connect(self.respond_to_message)
             self.main_gui.pool.start(prompt_model) #THIS IS WHERE USER QUERRY GETS SENT TO MODEL
             self.input_field.clear()

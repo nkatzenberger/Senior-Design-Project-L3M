@@ -1,10 +1,9 @@
-import os
 from l3m.l3mDownloadModel import DownloadModel
 from l3m.l3mHuggingFaceModelsAPI import HuggingFaceModelsAPI
-from PyQt6.QtWidgets import *
-from PyQt6.QtCore import Qt, QEvent, QThreadPool, QMetaObject
+from PyQt6.QtWidgets import QWidget, QVBoxLayout, QLineEdit, QListWidget, QPushButton, QApplication
+from PyQt6.QtCore import Qt, QEvent, QTimer
 
-class DownloadModelGUI(QDialog):
+class DownloadModelGUI(QWidget):
     def __init__(self, model_panel, main_gui, parent=None):
         super().__init__(parent)
         # Create references to other classes so it can make updates to them
@@ -19,10 +18,12 @@ class DownloadModelGUI(QDialog):
 
         #Set up window
         self.setWindowTitle("Download Model")
-        self.setWindowFlags(Qt.WindowType.FramelessWindowHint | Qt.WindowType.WindowStaysOnTopHint)
-        self.setGeometry(400, 267, 400, 200)
+        self.setWindowFlags(Qt.WindowType.Widget | Qt.WindowType.FramelessWindowHint)
+        self.setGeometry(400, 267, 380, 200)
+        self.setObjectName("DownloadModelPopup")
+        self.setAttribute(Qt.WidgetAttribute.WA_StyledBackground, True)
         self.setStyleSheet("""
-            QDialog {
+            QWidget#DownloadModelPopup {
                 background-color: #2E3B4E;
                 border: 2px solid #1ABC9C;
                 border-radius: 10px;
@@ -40,6 +41,9 @@ class DownloadModelGUI(QDialog):
                 border-radius: 5px;
             }
             QPushButton:hover {
+                background-color: #16A085;
+            }
+            QPushButton:disabled {
                 background-color: #16A085;
             }
         """)
@@ -68,7 +72,6 @@ class DownloadModelGUI(QDialog):
         # Get default list of models
         self.searchForModel()
 
-
     #Triggers API to run on thread
     def searchForModel(self):
         self.query = self.search_input.text().strip()
@@ -95,32 +98,46 @@ class DownloadModelGUI(QDialog):
     def downloadSelectedModel(self):
         selected_items = self.model_list.selectedItems()
         if selected_items:
-            selected_model = selected_items[0].text()
+            selected_model_name = selected_items[0].text()  # Get string name
 
-            # Retrieve the model ID from stored data
-            if hasattr(self, "fetched_model_data") and selected_model in self.fetched_model_data:
-                model_id = self.fetched_model_data[selected_model]["Model ID"]
+            if hasattr(self, "fetched_model_data") and selected_model_name in self.fetched_model_data:
+                model_metadata = self.fetched_model_data[selected_model_name]
             else:
-                print("Model ID not found for the selected model!")
+                print("Model metadata not found for the selected model!")
                 return
 
-            print(f"Downloading model: {model_id}")
+            print(f"Downloading model: {model_metadata['Model ID']}")
 
-            self.download_model_thread = DownloadModel(model_id)
+            # Find and disable the button + update text
+            download_button = self.sender()
+            download_button.setText("Downloading...")
+            download_button.setEnabled(False)
+
+            # Start download process
+            self.download_model_thread = DownloadModel(model_metadata)
             self.download_model_thread.model_download_complete.connect(self.model_panel.onModelDownloadComplete)
             self.download_model_thread.start()
-            #TODO:
-            #disable button
-            #update button to say downloading...
-            #wait 2 seconds
-            #self.close()
+
+            # Close the popup after 2 seconds
+            QTimer.singleShot(2000, self.close)
+
         else:
             print("No model selected!")
 
+    def updatePosition(self):
+        if self.isVisible():
+            # Get live position of the button relative to the central widget
+            button_pos = self.model_panel.downloadModelButton.mapTo(
+                self.main_gui.centralWidget(), self.model_panel.downloadModelButton.rect().topRight()
+            )
+            self.move(button_pos.x() + 20, button_pos.y() - 160)
+
     #Closes GUI if user clicks outside of its geometry
     def eventFilter(self, source, event):
-        if event.type() == QEvent.Type.MouseButtonPress:
+        if event.type() == QEvent.Type.Resize and source is self.main_gui:
+            self.updatePosition()
+        elif event.type() == QEvent.Type.MouseButtonPress:
             if not self.geometry().contains(event.globalPosition().toPoint()):
                 self.close()
         return super().eventFilter(source, event)
-
+    
