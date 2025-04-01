@@ -1,7 +1,7 @@
 import pytest
 from l3m.l3mMainGUI import GUI
 from l3m.l3mModelPanel import ModelPanel
-from l3m.l3mPromptPanel import PromptPanel
+from l3m.l3mPromptModel import PromptModel
 
 @pytest.fixture
 def gui(app, qtbot):
@@ -37,14 +37,14 @@ def test_model_panel_rendered(gui):
 
 
 def test_prompt_panel_rendered(gui):
-    #Test that the PromptPanel is rendered correctly in the layout.
+    #Test that the PromptModel is rendered correctly in the layout.
     prompt_panel = gui.ref_prompt_panel
     assert prompt_panel is not None
-    assert prompt_panel.promptPanel.count() > 0
+    assert prompt_panel.promptModelLayout.count() > 0
 
 
 def test_layout_contains_model_and_prompt_panels(gui):
-    #Test that the main window layout contains both ModelPanel and PromptPanel.
+    #Test that the main window layout contains both ModelPanel and PromptModel.
     layout = gui.centralWidget().layout()
     assert layout is not None
     assert layout.count() == 2  # It should contain two panels

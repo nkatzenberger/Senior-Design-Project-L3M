@@ -1,70 +1,136 @@
-from PyQt6.QtCore import QRunnable, QObject, pyqtSignal
-from transformers import logging
-from utils.device_utils import DeviceManager
-from utils.logging_utils import LogManager
-import time
+from l3m.l3mGenerateTextResponse import GenerateTextResponse
+from PyQt6.QtWidgets import QPushButton, QScrollArea, QLineEdit, QHBoxLayout, QLabel, QFrame, QWidget, QVBoxLayout, QMessageBox
+from PyQt6.QtCore import Qt
 
-class PromptSignals(QObject):
-    result = pyqtSignal(str)
 
-class PromptModel(QRunnable):
-    def __init__(self, prompt, main_gui):
+class PromptModel(QWidget):
+    def __init__(self, main_gui):
         super().__init__()
-        logging.set_verbosity_error()
-        self.max_length = 500
-        self.prompt = prompt
-        self.device = DeviceManager.get_best_device()
-        self.signals = PromptSignals()
+        self.main_gui = main_gui  # Store reference to GUI
 
-        # Strong references to avoid GC issues
-        self.tokenizer = main_gui.current_tokenizer
-        self.model = main_gui.current_model
-        self.metadata = main_gui.current_metadata
+        # Define Layout for Prompt Panel
+        self.promptModelLayout = QVBoxLayout()
+
+        # Define the scrollable chat area
+        self.scroll_area = QScrollArea()
+        self.scroll_area.setWidgetResizable(True)
+
+        self.chat_container = QWidget()
+        self.chat_layout = QVBoxLayout()
+        self.chat_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
+        self.chat_container.setLayout(self.chat_layout)
+
+        self.scroll_area.setWidget(self.chat_container) # Add chat contaier to scroll area
+
+        # Prompt input feild
+        self.input_field = QLineEdit()
+        self.input_field.setStyleSheet("""
+            QLineEdit {
+                background: transparent;
+                color: white;
+                border: none;
+                border-radius: 20px;
+                padding: 6px 12px;
+                font-size: 14pt;
+            }
+            QLineEdit:focus {
+                outline: none;
+            }
+        """)
+        self.input_field.setPlaceholderText("Type your message here...")
+        self.input_field.returnPressed.connect(self.send_message)
+
+        # Button to send Prompt to model
+        self.send_button = QPushButton("Send")
+        self.send_button.setFixedSize(36, 36)  # Circle size
+        self.send_button.setStyleSheet("""
+            QPushButton {
+                background-color: #aaaaaa;
+                border: none;
+                border-radius: 18px;
+            }
+            QPushButton:hover {
+                background-color: #cccccc;
+            }
+        """)
+        self.send_button.clicked.connect(self.send_message)
+
+       # Create horizontal row for input field + send button
+        input_row = QHBoxLayout()
+        input_row.setContentsMargins(8, 8, 8, 8)
+        input_row.setSpacing(8)
+        input_row.addWidget(self.input_field)
+        input_row.addWidget(self.send_button)
+
+        # Create container for the row
+        self.input_container = QWidget()
+        self.input_container.setLayout(input_row)
+        self.input_container.setStyleSheet("""
+            background-color: #4f4f4f;
+            border-radius: 24px;
+        """)
+        self.input_container.setMinimumWidth(400)
+
+        # Add scroll area and input container to main layout
+        self.promptModelLayout.addWidget(self.scroll_area)
+        self.promptModelLayout.addWidget(self.input_container, alignment=Qt.AlignmentFlag.AlignHCenter)
+        self.setLayout(self.promptModelLayout)
     
-    def run(self):
-        try:
-            LogManager.log("info", "PromptModel thread started...")
-            start = time.time()
+    def resizeEvent(self, event):
+        super().resizeEvent(event)
 
-            context_length = getattr(self.model.config, "max_position_embeddings", 1024)
-            
-            inputs = self.tokenizer(
-                self.prompt,
-                return_tensors="pt",             # Output as PyTorch tensors
-                padding=True,            # Pad to a fixed length (so model input is consistent)
-                truncation=True,                 # Truncate if prompt is too long
-                max_length=context_length,     # Set based on your model’s context window
-                add_special_tokens=True,         # Adds <BOS>, <EOS>, etc., depending on model
-                return_attention_mask=True       # Needed for attention masking during generation
+        # Set input container to 80% of total panel width
+        parent_width = self.parent().width()
+        desired_width = int(parent_width * 0.7)
+
+        self.input_container.setFixedWidth(desired_width)
+
+    #Function for adding users prompt to chat window
+    def add_message(self, message, alignment, user=False):
+        message_label = QLabel(message)
+        message_label.setWordWrap(True)
+        message_label.setStyleSheet(
+            "background-color: #e1f5fe; padding: 8px; border-radius: 5px; font-size: 16pt; color: black;" if user else
+            "background-color: #c8e6c9; padding: 8px; border-radius: 5px; font-size: 16pt; color: black;"
+        )
+
+        message_layout = QHBoxLayout()
+        if alignment == Qt.AlignmentFlag.AlignRight:
+            message_layout.addStretch()
+            message_layout.addWidget(message_label)
+        else:
+            message_layout.addWidget(message_label)
+            message_layout.addStretch()
+
+        message_container = QFrame()
+        message_container.setLayout(message_layout)
+
+        self.chat_layout.addWidget(message_container)
+        self.chat_container.adjustSize()
+        self.scroll_area.verticalScrollBar().setValue(
+            self.scroll_area.verticalScrollBar().maximum()
+        )
+
+    # Function that sends users prompt to the model
+    def send_message(self):
+        user_message = self.input_field.text().strip()
+        
+        if not user_message:
+            return  # Avoid triggering if there's no user input
+        elif not self.main_gui.current_tokenizer or not self.main_gui.current_model:
+            QMessageBox.warning(
+                None, 
+                "No Model Selected", 
+                "Please select a model first"
             )
-            LogManager.log("info", f"Inputs created on device: {self.model.device}")
-            
-            inputs = {k: v.to(self.device) for k, v in inputs.items()}
+        elif user_message:
+            self.add_message(user_message, alignment=Qt.AlignmentFlag.AlignRight, user=True)
+            prompt_model = GenerateTextResponse(user_message, self.main_gui)
+            prompt_model.signals.result.connect(self.respond_to_message)
+            self.main_gui.pool.start(prompt_model) #THIS IS WHERE USER QUERRY GETS SENT TO MODEL
+            self.input_field.clear()
 
-            try:
-                outputs = self.model.generate(
-                    input_ids=inputs["input_ids"],
-                    attention_mask=inputs["attention_mask"],
-                    max_new_tokens=512,
-                    do_sample=True,
-                    top_p=0.9,
-                    temperature=0.8,
-                    repetition_penalty=1.1,
-                    eos_token_id=self.tokenizer.eos_token_id,
-                    pad_token_id=self.tokenizer.pad_token_id
-                )
-                LogManager.log("info", f"Model.generate() completed in {time.time() - start:.2f}s")
-            except Exception as e:
-                LogManager.log("error", f"model.generate() crashed: {e}")
-                self.signals.result.emit(f"Model crashed during generation: {e}")
-                return
+    # Function for adding models response to chat window
+    def respond_to_message(self, message): 
+        self.add_message(message, alignment=Qt.AlignmentFlag.AlignLeft, user=False)
 
-            response = self.tokenizer.decode(outputs[0], skip_special_tokens=True)
-            LogManager.log("info", f"Decoded response: {response[:10]}...")
-
-        except Exception as e:
-            LogManager.log("error", f"Exception in PromptModel: {e}")
-            response = f'Error: Failed to Prompt Model; {e}'
-
-        self.signals.result.emit(response)
-        return

@@ -66,30 +66,33 @@ def test_get_model_names_directory_not_exist():
     # Assert that the model names returned are correct
     assert model_names == []   
 
-def test_model_button_clicked(main_gui_mock, qtbot):
+@patch("l3m.l3mModelPanel.AnimateIcon")
+@patch("l3m.l3mModelPanel.switchModel")
+def test_model_button_clicked(mock_switch, mock_icon_class, main_gui_mock, qtbot):
+    mock_icon_instance = MagicMock()
+    mock_icon_class.return_value = mock_icon_instance
+
+    mock_switch_instance = MagicMock()
+    # Don't call stop_animation (yet) to inspect overlay
+    mock_switch_instance.signals.finished.connect = MagicMock()
+    mock_switch.return_value = mock_switch_instance
+
+    # Mock the GUI's thread pool too
+    mock_pool = MagicMock()
+    main_gui_mock.pool = mock_pool
+
     panel = ModelPanel(main_gui_mock)
     qtbot.addWidget(panel.downloadModelButton)
 
     model_name = "test_model"
+    panel.modelButtonClicked(model_name)
 
-    with patch("transformers.AutoTokenizer.from_pretrained") as mock_tokenizer, \
-         patch("transformers.AutoModelForCausalLM.from_pretrained") as mock_model, \
-         patch("os.path.exists", return_value=True), \
-         patch.object(panel, "stop_animation") as mock_stop_animation, \
-         patch("l3m.l3mModelPanel.switchModel") as mock_switch:
-
-        mock_tokenizer.return_value = MagicMock()
-        mock_model.return_value = MagicMock()
-
-        # Fake switchModel instance
-        mock_instance = MagicMock()
-        mock_instance.signals.finished.connect.side_effect = lambda cb: cb()  # immediately call the callback
-        mock_switch.return_value = mock_instance
-
-        panel.modelButtonClicked(model_name)
-
-        assert mock_stop_animation.called
-        mock_switch.assert_called_once_with(main_gui_mock, model_name=model_name)
+    # Assert overlay was set before signal completes
+    assert panel.overlay == mock_icon_instance
+    mock_icon_instance.setWindowFlag.assert_called_once()
+    mock_icon_instance.show.assert_called_once()
+    mock_switch.assert_called_once_with(main_gui_mock, model_name=model_name)
+    mock_pool.start.assert_called_once_with(mock_switch_instance)
 
 def test_on_model_download_complete_success(model_panel):
     """Test the functionality when model download completes successfully."""
