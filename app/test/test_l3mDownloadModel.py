@@ -21,10 +21,17 @@ def mock_hf_objects():
 
 @pytest.fixture
 def mock_os_functions():
-    """Fixture to mock OS-related functions."""
-    with patch("os.makedirs") as mock_makedirs, \
+    """Fixture to mock OS-related functions, skipping logger paths."""
+    original_makedirs = os.makedirs
+
+    def conditional_makedirs(path, *args, **kwargs):
+        if "logs" in path:
+            return original_makedirs(path, *args, **kwargs)
+        return MagicMock()
+
+    with patch("os.makedirs", side_effect=conditional_makedirs) as mock_makedirs, \
          patch("shutil.rmtree") as mock_rmtree, \
-         patch("os.path.exists", return_value=True):  # Ensure deletion happens
+         patch("os.path.exists", return_value=True):
         yield mock_makedirs, mock_rmtree
 
 @pytest.fixture
