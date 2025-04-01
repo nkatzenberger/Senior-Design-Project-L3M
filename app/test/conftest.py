@@ -5,6 +5,7 @@ from PyQt6.QtWidgets import QApplication
 
 # Add 'app/' to sys.path if not already present
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+import utils.torch_utils
 
 # Create single QApplication to share for all tests
 @pytest.fixture(scope="session")

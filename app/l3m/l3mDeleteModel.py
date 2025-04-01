@@ -1,8 +1,9 @@
 import os
 import shutil
+import json
 from PyQt6.QtCore import QRunnable, QObject, pyqtSignal
-from utils.path_utils import get_models_path
-from utils.logging_utils import log_message
+from utils.path_utils import PathManager
+from utils.logging_utils import LogManager
 
 class DeleteModelSignal(QObject):
     finished = pyqtSignal()
@@ -10,28 +11,51 @@ class DeleteModelSignal(QObject):
 class DeleteModel(QRunnable):
     def __init__(self, main_gui):
         super().__init__()
-        self.models_dir = get_models_path()
-        self.model_name = main_gui.current_model_name
+        self.main_gui = main_gui
         self.signals = DeleteModelSignal()
+        self.models_dir = PathManager.get_models_path()
+        model_id = self.main_gui.current_metadata.get("Model ID", "")
+        self.model_folder_name = model_id.replace("/", "-")
     
     def run(self):
-        if not self.model_name:
-            log_message("info", f"No Model Selected for deletion")
-            return
-        
-        model_path = os.path.join(self.models_dir, self.model_name)
+        try:
+            # Get Model ID from metadata
+            model_path = os.path.join(self.models_dir, self.model_folder_name)
 
-        if os.path.exists(model_path):
-            try:
+            metadata = self.main_gui.current_metadata
+            model_id = metadata.get("Model ID", "")
+
+            if not model_id or "/" not in model_id:
+                LogManager.log("error", f"Invalid or missing model ID in metadata: {model_id}")
+                return
+
+            author, model_name = model_id.split("/", 1)
+            
+            # 1. Delete the model folder itself
+            if os.path.exists(model_path):
                 shutil.rmtree(model_path)
-                log_message("info", f"Model '{model_path}' successfully deleted.")
-                self.main_gui.current_model = None
-                self.main_gui.current_tokenizer = None
-                self.main_gui.current_model_name = None
+                LogManager.log("info", f"Deleted model folder: {model_path}")
+            
+            # 2. Delete Hugging Face cached folders
+            hf_cache_dir = os.path.expanduser(os.getenv("HF_HOME", "~/.cache/huggingface"))
+            cache_paths = [
+                os.path.join(hf_cache_dir, "hub", f"models--{author}--{model_name}"),
+                os.path.join(hf_cache_dir, "hub", ".locks", f"models--{author}--{model_name}")
+            ]
+            
+            for path in cache_paths:
+                if os.path.exists(path):
+                    if os.path.isdir(path):
+                        shutil.rmtree(path)
+                    else:
+                        os.remove(path)
+                    LogManager.log("info", f"Deleted: {path}")
 
-            except Exception as e:
-                log_message("error", f"Error deleting model: {e}")
-        else:
-            log_message("warning", f"Model path does not exist: {model_path}")
+        except Exception as e:
+            LogManager.log("error", f"Error during deletion: {e}")
+        
+        self.main_gui.current_model = None
+        self.main_gui.current_tokenizer = None
+        self.main_gui.current_model_name = None
 
         self.signals.finished.emit()

@@ -1,31 +1,36 @@
 import os
 import logging
 from logging.handlers import RotatingFileHandler
-from utils.path_utils import get_logs_path
+from utils.path_utils import PathManager
 
-# Ensure the logs directory exists
-LOG_FILE = os.path.join(get_logs_path(), "L3M.log")
+class LogManager:
+    logger = None
 
-# Logging configuration
-log_formatter = logging.Formatter("%(asctime)s - %(levelname)s - %(message)s")
-log_handler = RotatingFileHandler(LOG_FILE, maxBytes=5*1024*1024, backupCount=3, encoding="utf-8")
-log_handler.setFormatter(log_formatter)
+    @classmethod
+    def _initialize_logger(cls):
+        if cls.logger is not None:
+            return  # Already initialized
 
-# Create logger
-logger = logging.getLogger("L3MLogger")
-logger.setLevel(logging.DEBUG)
-logger.addHandler(log_handler)
+        log_file = os.path.join(PathManager.get_logs_path(), "L3M.log")
+        formatter = logging.Formatter("%(asctime)s - %(levelname)s - %(message)s")
+        handler = RotatingFileHandler(log_file, maxBytes=5*1024*1024, backupCount=3, encoding="utf-8")
+        handler.setFormatter(formatter)
 
-# Function to log messages
-def log_message(level, message):
-    """Helper function to log messages with different levels"""
-    if level == "debug":
-        logger.debug(message)
-    elif level == "info":
-        logger.info(message)
-    elif level == "warning":
-        logger.warning(message)
-    elif level == "error":
-        logger.error(message)
-    elif level == "critical":
-        logger.critical(message)
+        cls.logger = logging.getLogger("L3MLogger")
+        cls.logger.setLevel(logging.DEBUG)
+        cls.logger.addHandler(handler)
+
+    @classmethod
+    def log(cls, level, message):
+        cls._initialize_logger()
+
+        if level == "debug":
+            cls.logger.debug(message)
+        elif level == "info":
+            cls.logger.info(message)
+        elif level == "warning":
+            cls.logger.warning(message)
+        elif level == "error":
+            cls.logger.error(message)
+        elif level == "critical":
+            cls.logger.critical(message)
