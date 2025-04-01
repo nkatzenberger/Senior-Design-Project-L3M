@@ -17,14 +17,33 @@ $(document).ready(function () {
                     <div class="col-md-4">
                         <div class="card mb-3">
                             <div class="card-body">
-                                <h5 class="card-title">${model.modelId}</h5>
-                                <p><strong>Library:</strong> ${model.library_name || "N/A"}</p>
-                                <p><strong>Pipeline:</strong> ${model.pipeline_tag || "N/A"}</p>
-                                <p><strong>Downloads:</strong> ${model.downloads || 0}</p>
-                                <p><strong>Likes:</strong> ${model.likes || 0}</p>
-                                <p><strong>License:</strong> ${model.license || "Unknown"}</p>
-                                <p><strong>Created:</strong> ${model.createdAt ? model.createdAt.slice(0, 10) : "N/A"}</p>
+                                <h5 class="title is-5 simpleText">${model.modelId}</h5>
+                                <div class="info-item">
+                                    <i class="fas fa-thumbs-up has-text-info title"></i>
+                                    <strong>Likes:</strong> ${model.likes || 0}
+                                </div>
+                                <div class="info-item">
+                                    <i class="fas fa-book has-text-success title"></i>
+                                    <strong>Library:</strong> ${model.library_name || "N/A"}
+                                </div>
+                                <div class="info-item">
+                                    <i class="fas fa-project-diagram has-text-primary title"></i>
+                                    <strong>Pipeline:</strong> ${model.pipeline_tag || "N/A"}
+                                </div>
+                                <div class="info-item">
+                                    <i class="fas fa-download has-text-warning title"></i>
+                                    <strong>Downloads:</strong> ${model.downloads || 0}
+                                </div>
+                                <div class="info-item">
+                                    <i class="fas fa-scroll has-text-danger title"></i>
+                                    <strong>License:</strong> ${model.license || "Unknown"}
+                                </div>
+                                <div class="info-item">
+                                    <i class="fas fa-calendar-alt has-text-warning title"></i>
+                                    <strong>Created At:</strong> ${model.createdAt ? model.createdAt.slice(0, 10) : "N/A"}
+                                </div>
                                 <a href="https://huggingface.co/${model.modelId}" class="btn btn-info" target="_blank">View Model</a>
+       
                             </div>
                         </div>
                     </div>
