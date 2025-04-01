@@ -1,4 +1,5 @@
 from l3m.l3mGenerateTextResponse import GenerateTextResponse
+from l3m.l3mChatMessage import ChatMessage, LoadingMessage
 from PyQt6.QtWidgets import QPushButton, QScrollArea, QLineEdit, QHBoxLayout, QLabel, QFrame, QWidget, QVBoxLayout, QMessageBox
 from PyQt6.QtCore import Qt
 
@@ -87,25 +88,8 @@ class PromptModel(QWidget):
 
     #Function for adding users prompt to chat window
     def add_message(self, message, alignment, user=False):
-        message_label = QLabel(message)
-        message_label.setWordWrap(True)
-        message_label.setStyleSheet(
-            "background-color: #e1f5fe; padding: 8px; border-radius: 5px; font-size: 16pt; color: black;" if user else
-            "background-color: #c8e6c9; padding: 8px; border-radius: 5px; font-size: 16pt; color: black;"
-        )
-
-        message_layout = QHBoxLayout()
-        if alignment == Qt.AlignmentFlag.AlignRight:
-            message_layout.addStretch()
-            message_layout.addWidget(message_label)
-        else:
-            message_layout.addWidget(message_label)
-            message_layout.addStretch()
-
-        message_container = QFrame()
-        message_container.setLayout(message_layout)
-
-        self.chat_layout.addWidget(message_container)
+        msg_widget = ChatMessage(message, is_user=user)
+        self.chat_layout.addWidget(msg_widget)
         self.chat_container.adjustSize()
         self.scroll_area.verticalScrollBar().setValue(
             self.scroll_area.verticalScrollBar().maximum()
@@ -114,23 +98,41 @@ class PromptModel(QWidget):
     # Function that sends users prompt to the model
     def send_message(self):
         user_message = self.input_field.text().strip()
-        
         if not user_message:
-            return  # Avoid triggering if there's no user input
+            return  # Skip if input is empty
         elif not self.main_gui.current_tokenizer or not self.main_gui.current_model:
             QMessageBox.warning(
-                None, 
-                "No Model Selected", 
+                None,
+                "No Model Selected",
                 "Please select a model first"
             )
-        elif user_message:
-            self.add_message(user_message, alignment=Qt.AlignmentFlag.AlignRight, user=True)
-            prompt_model = GenerateTextResponse(user_message, self.main_gui)
-            prompt_model.signals.result.connect(self.respond_to_message)
-            self.main_gui.pool.start(prompt_model) #THIS IS WHERE USER QUERRY GETS SENT TO MODEL
-            self.input_field.clear()
+            return
+        
+        # Add user message
+        self.add_message(user_message, alignment=Qt.AlignmentFlag.AlignRight, user=True)
+
+        # Add loading widget
+        self.loading_widget = LoadingMessage()
+        self.chat_layout.addWidget(self.loading_widget)
+        self.chat_container.adjustSize()
+        self.scroll_area.verticalScrollBar().setValue(
+            self.scroll_area.verticalScrollBar().maximum()
+        )
+
+        # Send message to model
+        prompt_model = GenerateTextResponse(user_message, self.main_gui)
+        prompt_model.signals.result.connect(self.respond_to_message)
+        self.main_gui.pool.start(prompt_model)
+
+        # Clear input field
+        self.input_field.clear()
 
     # Function for adding models response to chat window
     def respond_to_message(self, message): 
+        if self.loading_widget:
+            self.chat_layout.removeWidget(self.loading_widget)
+            self.loading_widget.setParent(None)
+            self.loading_widget = None
+
         self.add_message(message, alignment=Qt.AlignmentFlag.AlignLeft, user=False)
 

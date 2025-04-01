@@ -3,6 +3,7 @@ from PyQt6.QtCore import Qt
 from l3m.l3mModelInfo import ModelInfo
 from l3m.l3mPromptModel import PromptModel
 
+
 class PromptPanel(QWidget):
     def __init__(self, main_gui):
         super().__init__()

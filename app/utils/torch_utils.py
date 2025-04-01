@@ -1,5 +1,6 @@
 import os
 import sys
+import platform
 
 class TorchLoader:
     @classmethod
@@ -9,11 +10,20 @@ class TorchLoader:
 
     @classmethod
     def load(cls):
+        is_macos = platform.system() == "Darwin"
         use_cuda = os.environ.get("FORCE_CPU_TORCH") != "1" #For CircleCI
         cuda_path = cls._get_path("torch_cuda")
         cpu_path = cls._get_path("torch_cpu")
 
         try:
+            if is_macos:
+                import torch
+                cls._torch = torch
+                cls._device = torch.device("cpu")  # macOS only supports CPU
+                print("macOS detected: using system torch (CPU only)")
+                sys.modules["torch"] = cls._torch
+                return
+            
             if use_cuda:
                 sys.path.insert(0, cuda_path)
                 import torch
