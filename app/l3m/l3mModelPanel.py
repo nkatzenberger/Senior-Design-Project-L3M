@@ -148,18 +148,7 @@ class ModelPanel():
         self.Switch = switchModel(self.main_gui, model_name = model_name)
         self.Switch.signals.finished.connect(self.stop_animation)
         self.main_gui.pool.start(self.Switch)
-        """
-        model_name = str(model_name)
-        models_dir = get_models_path()
-        model_path = os.path.join(models_dir, model_name)
-        #add loading spinner
-        if not os.path.exists(model_path):
-            print("Error: Model path does not exist!")
-            return  # Prevent further errors
-
-        self.main_gui.current_tokenizer = AutoTokenizer.from_pretrained(model_path)
-        self.main_gui.current_model = AutoModelForCausalLM.from_pretrained(model_path)
-        self.main_gui.repaint()"""
+      
     def stop_animation(self):
         if self.overlay:
             self.overlay.stopAnimation()

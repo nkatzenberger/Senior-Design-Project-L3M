@@ -16,7 +16,7 @@ class LoadingCircle(QGraphicsEllipseItem, QObject):
         self.update()
 
     def paint(self, painter, option, widget=None):
-        painter.setPen(QColor(0, 0, 255))  #Blue Outline
+        painter.setPen(QColor(0, 120, 215))  #Blue Outline
         painter.setBrush(QBrush(QColor(0, 120, 215))) #Fill Color
         painter.drawArc(self.rect(), self._start_angle * 16, self.span_angle * 16) #Draws Arc
         

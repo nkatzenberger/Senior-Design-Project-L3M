@@ -1,7 +1,49 @@
 from l3m.l3mPromptModel import PromptModel
 from PyQt6.QtWidgets import QPushButton, QScrollArea, QLineEdit, QHBoxLayout, QLabel, QFrame, QWidget, QVBoxLayout, QMessageBox
-from PyQt6.QtCore import Qt
+from PyQt6.QtCore import Qt, QPoint, QPropertyAnimation
 
+class BouncingElipses(QWidget):
+        def __init__(self, parent=None):
+            super().__init__(parent)
+            self.bubble_frame = QFrame()
+            self.bubble_frame.setStyleSheet("background-color: #c8e6c9; padding: 8px; border-radius: 5px; font-size: 16pt; color: black;")
+            self.bubble_layout = QHBoxLayout(self.bubble_frame)
+            
+            self.dots = []
+            for i in range(3):
+                dot = QLabel(".")
+                dot.setStyleSheet("font-size: 24px; color: red;")
+                dot.setAlignment(Qt.AlignmentFlag.AlignLeft)
+                self.dots.append(dot)
+            for i, dot in enumerate(self.dots):
+                fixed_start_pos = QPoint(15 + (i * 30), 17)  # starting coordinates
+                dot.move(fixed_start_pos.x(), fixed_start_pos.y())
+            self.animations = []
+            self.current_index = 0  # Track which dot is currently animating
+            self.animate_next_dot()
+
+        def animate_next_dot(self):
+            if self.current_index >= len(self.dots):  # Check if all dots have been animated
+                self.current_index = 0
+            
+            dot = self.dots[self.current_index]
+            start_pos = dot.pos()
+            end_pos = QPoint(start_pos.x(), start_pos.y()-10)  # Adjust position vertically
+            Upanimation = QPropertyAnimation(dot, b"pos")
+            Upanimation.setDuration(500)
+            Upanimation.setStartValue(start_pos)
+            Upanimation.setEndValue(end_pos)
+            Downanimation = QPropertyAnimation(dot, b"pos")
+            Downanimation.setDuration(500)
+            Downanimation.setStartValue(end_pos)
+            Downanimation.setEndValue(start_pos)
+            Downanimation.finished.connect(self.animate_next_dot)
+
+            Upanimation.start()
+            Downanimation.start()
+            self.animations.append(Upanimation)
+            self.animations.append(Downanimation)
+            self.current_index += 1
 
 class PromptPanel(QWidget):
     def __init__(self, main_gui):
@@ -80,6 +122,10 @@ class PromptPanel(QWidget):
             )
         elif user_message:
             self.add_message(user_message, alignment=Qt.AlignmentFlag.AlignRight, user=True)
+            AnimatedElipses = BouncingElipses()
+            self.add_message(AnimatedElipses, alignment=Qt.AlignmentFlag.AlignLeft, user = False)
+            """AnimatedElipses = BouncingElipses()
+            self.chat_layout.addWidget(AnimatedElipses)"""
             prompt_model = PromptModel(user_message, self.main_gui.current_tokenizer, self.main_gui.current_model)
             prompt_model.signals.result.connect(self.respond_to_message)
             self.main_gui.pool.start(prompt_model) #THIS IS WHERE USER QUERRY GETS SENT TO MODEL
@@ -89,3 +135,4 @@ class PromptPanel(QWidget):
     def respond_to_message(self, message): 
         self.add_message(message, alignment=Qt.AlignmentFlag.AlignLeft, user=False)
 
+    
