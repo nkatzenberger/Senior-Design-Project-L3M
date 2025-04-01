@@ -157,13 +157,15 @@ class ModelPanel():
         self.overlay.setWindowFlag(Qt.WindowType.Tool)
         self.overlay.show()
         self.Switch = switchModel(self.main_gui, model_name = model_name)
-        self.Switch.signals.finished.connect(self.stop_animation)
+        self.Switch.signals.finished.connect(self.modelSwitchFinished)
         self.main_gui.pool.start(self.Switch)
 
-    def stop_animation(self):
+    def modelSwitchFinished(self):
         if self.overlay:
             self.overlay.stopAnimation()
             self.overlay = None  # Clean up
+        self.main_gui.ref_prompt_panel.model_info.refresh()
+
 
     # Opens Download Model GUI
     def downloadModelButtonClicked(self):
