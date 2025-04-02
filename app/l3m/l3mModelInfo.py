@@ -1,5 +1,5 @@
 from PyQt6.QtWidgets import (
-    QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton, QScrollArea, QSizePolicy, QFrame, QAbstractScrollArea
+    QWidget, QVBoxLayout, QHBoxLayout, QLabel, QScrollArea, QSizePolicy, QFrame, QAbstractScrollArea, QSpacerItem
 )
 from PyQt6.QtCore import Qt, QPropertyAnimation, QEasingCurve
 
@@ -9,7 +9,7 @@ class ModelInfo(QWidget):
         # Store reference to main GUI and get metadata
         self.main_gui = main_gui
         self.metadata = self.main_gui.current_metadata if self.main_gui.current_metadata else {}
-        self.title = self.metadata.get('Model ID', 'Select A Model with a super duper really long name')
+        self.title = self.metadata.get('Model ID', 'Select A Model')
 
         self.toggle_button = QWidget()
         self.toggle_button.setFixedHeight(50)
@@ -50,6 +50,7 @@ class ModelInfo(QWidget):
         self.toggle_animation.setEasingCurve(QEasingCurve.Type.InOutQuart)
 
         main_layout = QVBoxLayout(self)
+        main_layout.setSpacing(0)
         main_layout.addWidget(self.toggle_button)
         main_layout.addWidget(self.content_area)
         main_layout.setContentsMargins(0,0,0,0)
@@ -122,6 +123,7 @@ class ModelInfo(QWidget):
         layout.addWidget(QLabel(f"Model Type: {self.metadata.get('Pipeline Tag', 'N/A')}"))
         layout.addWidget(QLabel(f"Library: {self.metadata.get('Library Name', 'N/A')}"))
         layout.addWidget(QLabel(f"Size: {str(self.metadata.get('Used Storage (GB)', 'N/A'))} GB"))
+        layout.addItem(QSpacerItem(0, 10, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Fixed))
         return layout
     
     def refresh(self):
@@ -130,8 +132,8 @@ class ModelInfo(QWidget):
         model_name = full_model_id.split('/')[-1]
 
         # Update the toggle button text
-        checked = self.expanded
-        arrow = "▼" if checked else "▶"
+        self.expanded = False
+        arrow = "▶"
         self.label_title.setText(model_name)
         self.label_title.setToolTip(model_name)
         self.label_arrow.setText(arrow)

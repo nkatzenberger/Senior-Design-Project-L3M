@@ -1,7 +1,8 @@
 from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QSizePolicy
-from PyQt6.QtCore import Qt, QEvent
+from PyQt6.QtCore import Qt
 from l3m.l3mModelInfo import ModelInfo
 from l3m.l3mPromptModel import PromptModel
+from l3m.l3mChatHistory import ChatHistory
 
 
 class PromptPanel(QWidget):
@@ -24,11 +25,7 @@ class PromptPanel(QWidget):
         left_layout.addWidget(self.model_info)
 
         # Chat History (styled directly)
-        self.chat_history = QWidget()  # Replace later
-        self.chat_history.setStyleSheet("background-color: #2c2c2c;")
-        self.chat_history.setMinimumHeight(150)
-        self.chat_history.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Preferred)
-        self.chat_history.setAttribute(Qt.WidgetAttribute.WA_StyledBackground, True)
+        self.chat_history = ChatHistory(main_gui)
         left_layout.addWidget(self.chat_history)
 
         # Right panel: full PromptModel
