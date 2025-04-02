@@ -24,7 +24,7 @@ class ChatHistory(QWidget):
         self.setObjectName("chatHistory")
         self.setStyleSheet("""
             #chatHistory {
-                background-color: #2c2c2c;
+                background-color: #1f1f1f;
                 border: 2px solid transparent;
                 border-top-color: #444444;
             }

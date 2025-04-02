@@ -13,7 +13,7 @@ class PromptPanel(QWidget):
         # Top-level horizontal layout
         main_layout = QHBoxLayout(self)
         main_layout.setContentsMargins(0, 0, 0, 0)
-        main_layout.setSpacing(10)
+        main_layout.setSpacing(0)
 
         # LEFT SIDE: just a QVBoxLayout, not a QWidget
         left_layout = QVBoxLayout()
@@ -32,7 +32,6 @@ class PromptPanel(QWidget):
         self.prompt_model = PromptModel(main_gui)
 
         main_layout.addLayout(left_layout)
-
         main_layout.addWidget(self.prompt_model, 1)
 
         # Set layout

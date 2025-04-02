@@ -38,7 +38,7 @@ class ModelPanel(QWidget):
         layout.addWidget(self.deleteModelButton, alignment=Qt.AlignmentFlag.AlignBottom)
 
         # Styling and behavior
-        self.setStyleSheet("background-color: #1f1f1f;")
+        self.setStyleSheet("background-color: #2c2c2c;")
         self.setSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Expanding)
         self.setAttribute(Qt.WidgetAttribute.WA_StyledBackground, True)
 

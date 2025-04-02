@@ -50,20 +50,18 @@ class ModelInfo(QWidget):
         self.toggle_animation.setEasingCurve(QEasingCurve.Type.InOutQuart)
 
         main_layout = QVBoxLayout(self)
-        main_layout.setSpacing(0)
         main_layout.addWidget(self.toggle_button)
         main_layout.addWidget(self.content_area)
         main_layout.setContentsMargins(0,0,0,0)
+        main_layout.setSpacing(0)
         main_layout.setAlignment(self.toggle_button, Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignTop)
 
-        model_info_section = self.create_model_info_section()
-        self.setContentLayout(model_info_section)
-
+        self.setContentLayout(self.create_model_info_section())
         self.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Maximum)
         self.setFixedWidth(250)
         self.setAttribute(Qt.WidgetAttribute.WA_StyledBackground, True)
         self.setStyleSheet("""
-            background-color: #2c2c2c;
+            background-color: #1f1f1f;
         """)
 
     # Handle click event
