@@ -4,59 +4,61 @@ from l3m.l3mLoadingIcon import AnimateIcon
 from l3m.l3mSwitchModels import switchModel
 from l3m.l3mDeleteModel import DeleteModel
 from typing import Optional
-from PyQt6.QtWidgets import QPushButton, QVBoxLayout, QMessageBox, QButtonGroup
+from PyQt6.QtWidgets import QWidget, QPushButton, QVBoxLayout, QMessageBox, QButtonGroup, QSizePolicy
 from PyQt6.QtCore import Qt
 from utils.path_utils import PathManager
 from utils.logging_utils import LogManager
 
-class ModelPanel():
+class ModelPanel(QWidget):
     def __init__(self, main_gui):
-        self.main_gui = main_gui # Store reference to GUI
+        super().__init__()
+        self.main_gui = main_gui
 
-        # Define Layout for Model Panel
-        self.modelPanel = QVBoxLayout()
+        # Main layout applied directly to the class
+        layout = QVBoxLayout(self)
+        layout.setContentsMargins(10, 10, 10, 10)
+        layout.setSpacing(10)
 
-        # Config items within Model Panel
-        self.modelPanel.setSpacing(10)
-        self.modelPanel.setContentsMargins(10, 10, 10, 10)
-        self.modelPanel.setAlignment(Qt.AlignmentFlag.AlignTop)
-
-        # Create layout for Model Buttons within Model Panel
+        # Model buttons layout (top)
         self.modelButtonLayout = QVBoxLayout()
         self.modelButtonLayout.setAlignment(Qt.AlignmentFlag.AlignHCenter)
+        layout.addLayout(self.modelButtonLayout)
 
-        # Create model buttons
-        modelDict = ModelPanel.createAcronyms(ModelPanel.getModelNames())
+        # Populate buttons dynamically
+        modelDict = self.createAcronyms(self.getModelNames())
         self.createModelButtons(modelDict)
 
-        # Create Download Model button
-        self.downloadModelButton = QPushButton("Download Model")
-        self.downloadModelButton.setStyleSheet(
-            "background-color: #222222; color: white; font-size: 12pt; padding: 8px; border-radius: 5px;"
-        )
-        self.downloadModelButton.clicked.connect(self.downloadModelButtonClicked)
+        layout.addStretch(1)
 
-        # Create Delete Model button
-        self.deleteModelButton = QPushButton("Delete Model")
-        self.deleteModelButton.setStyleSheet(
-            "background-color: #222222; color: white; font-size: 12pt; padding: 8px; border-radius: 5px;"
-        )
-        self.deleteModelButton.clicked.connect(self.deleteModelButtonClicked)
+        # Styled action buttons (bottom)
+        self.downloadModelButton = self._styledButton("Download Model", self.downloadModelButtonClicked)
+        self.deleteModelButton = self._styledButton("Delete Model", self.deleteModelButtonClicked)
 
-        # Add buttons to layout
-        self.modelPanel.addLayout(self.modelButtonLayout)
+        layout.addWidget(self.downloadModelButton, alignment=Qt.AlignmentFlag.AlignBottom)
+        layout.addWidget(self.deleteModelButton, alignment=Qt.AlignmentFlag.AlignBottom)
 
-        # Add a vertical spacer that pushes everything below it to the bottom
-        self.modelPanel.addStretch(1)
+        # Styling and behavior
+        self.setStyleSheet("background-color: #1f1f1f;")
+        self.setSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Expanding)
+        self.setAttribute(Qt.WidgetAttribute.WA_StyledBackground, True)
 
-        # Add a button layout at the bottom
-        buttonLayout = QVBoxLayout()
-        buttonLayout.setSpacing(10)
-        buttonLayout.setAlignment(Qt.AlignmentFlag.AlignBottom)
-        buttonLayout.addWidget(self.downloadModelButton)
-        buttonLayout.addWidget(self.deleteModelButton)
-
-        self.modelPanel.addLayout(buttonLayout)
+    def _styledButton(self, text, handler):
+        button = QPushButton(text)
+        button.setStyleSheet("""
+            QPushButton {
+                background-color: #222222;
+                color: white;
+                font-size: 12pt;
+                padding: 8px;
+                border-radius: 5px;
+                border: none;
+            }
+            QPushButton:hover {
+                background-color: #333333;
+            }
+        """)
+        button.clicked.connect(handler)
+        return button
 
     #Creates acronyms for model buttons
     @staticmethod
@@ -94,14 +96,10 @@ class ModelPanel():
     @staticmethod
     def getModelNames():
         models_dir = PathManager.get_models_path()
-        
         if not os.path.exists(models_dir):
-            print("Models directory does not exist!")
-            return []  #return an empty list
-
-        model_names = [name for name in os.listdir(models_dir) if os.path.isdir(os.path.join(models_dir, name))]
-        return model_names
-    
+            return []
+        return [name for name in os.listdir(models_dir) if os.path.isdir(os.path.join(models_dir, name))]
+        
     # Create model button for each model installed
     def createModelButtons(self, modelAcronyms: dict):
         # Create a QButtonGroup to manage the buttons

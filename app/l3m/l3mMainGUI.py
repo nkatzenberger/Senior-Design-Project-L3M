@@ -30,11 +30,13 @@ class GUI(QMainWindow):
         self.setCentralWidget(central_widget)
 
         # Overall layout within central window
-        panelLayout = QHBoxLayout() 
+        panelLayout = QHBoxLayout()
+        panelLayout.setContentsMargins(0, 0, 0, 0)
+        panelLayout.setSpacing(0)  
 
         # Add layouts to central panel layout
-        panelLayout.addLayout(self.ref_model_panel.modelPanel)
-        panelLayout.addWidget(self.ref_prompt_panel)
+        panelLayout.addWidget(self.ref_model_panel)
+        panelLayout.addWidget(self.ref_prompt_panel, 1)
         central_widget.setLayout(panelLayout)
 
         LogManager.log("info", "GUI initialized successfully")
