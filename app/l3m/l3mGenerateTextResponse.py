@@ -13,7 +13,6 @@ class GenerateTextResponse(QRunnable):
         logging.set_verbosity_error()
         self.max_length = 500
         self.prompt = prompt
-        self.device = DeviceManager.get_best_device()
         self.signals = PromptSignals()
 
         # Strong references to avoid GC issues
@@ -39,7 +38,8 @@ class GenerateTextResponse(QRunnable):
             )
             LogManager.log("info", f"Inputs created on device: {self.model.device}")
             
-            inputs = {k: v.to(self.device) for k, v in inputs.items()}
+            model_device = next(self.model.parameters()).device
+            inputs = {k: v.to(model_device) for k, v in inputs.items()}
 
             try:
                 outputs = self.model.generate(

@@ -20,7 +20,6 @@ class switchModel(QRunnable):
         self.models_dir = PathManager.get_models_path()
         self.model_name = model_name
         self.signals = WorkerSignal()
-        self.device = DeviceManager.get_best_device()
 
     def run(self):
         # Unload existing model
@@ -46,8 +45,9 @@ class switchModel(QRunnable):
         model_selected = AutoModelForCausalLM.from_pretrained(
             model_path,
             torch_dtype=DeviceManager.get_best_dtype(),
-            low_cpu_mem_usage=True
-        ).to(self.device)
+            low_cpu_mem_usage=True,
+            device_map="auto"
+        )
 
         # Inject pad token early if needed
         if self.main_gui.current_tokenizer.pad_token is None:
@@ -74,7 +74,7 @@ class switchModel(QRunnable):
         self.main_gui.current_model = model_selected
 
         LogManager.log("info", f'Current model is now {model_path}')
-        LogManager.log("info", f"Model loaded to {self.device}")
+        LogManager.log("info", f"Model loaded to device: {next(model_selected.parameters()).device}")
 
         # Load metadata
         metadata = {}
