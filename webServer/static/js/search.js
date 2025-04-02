@@ -19,11 +19,11 @@ $(document).ready(function () {
                             <div class="card-body">
                                 <h5 class="title is-5 simpleText">${model.modelId}</h5>
                                 <div class="info-item">
-                                    <i class="fas fa-thumbs-up has-text-info title"></i>
+                                    <i class="fas fa-thumbs-up has-text-info title" style ="color:rgb(13, 255, 1);"></i>
                                     <strong>Likes:</strong> ${model.likes || 0}
                                 </div>
                                 <div class="info-item">
-                                    <i class="fas fa-book has-text-success title"></i>
+                                    <i class="fas fa-book has-text-success title" style ="color:rgb(255, 175, 1);"></i>
                                     <strong>Library:</strong> ${model.library_name || "N/A"}
                                 </div>
                                 <div class="info-item">
@@ -31,15 +31,15 @@ $(document).ready(function () {
                                     <strong>Pipeline:</strong> ${model.pipeline_tag || "N/A"}
                                 </div>
                                 <div class="info-item">
-                                    <i class="fas fa-download has-text-warning title"></i>
+                                    <i class="fas fa-download has-text-warning title" style ="color:rgb(1, 204, 255);"></i>
                                     <strong>Downloads:</strong> ${model.downloads || 0}
                                 </div>
                                 <div class="info-item">
-                                    <i class="fas fa-scroll has-text-danger title"></i>
+                                    <i class="fas fa-scroll has-text-danger title" style ="color:rgb(204, 209, 65);"></i>
                                     <strong>License:</strong> ${model.license || "Unknown"}
                                 </div>
                                 <div class="info-item">
-                                    <i class="fas fa-calendar-alt has-text-warning title"></i>
+                                    <i class="fas fa-calendar-alt has-text-warning title" style ="color:rgb(255, 0, 0);"></i>
                                     <strong>Created At:</strong> ${model.createdAt ? model.createdAt.slice(0, 10) : "N/A"}
                                 </div>
                                 <a href="https://huggingface.co/${model.modelId}" class="btn btn-info" target="_blank">View Model</a>
