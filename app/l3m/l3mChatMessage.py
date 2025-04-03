@@ -1,8 +1,5 @@
-import html as html_lib
-import re
-from PyQt6.QtWidgets import QWidget, QLabel, QVBoxLayout, QHBoxLayout, QTextBrowser, QFrame, QSizePolicy
+from PyQt6.QtWidgets import QWidget, QLabel, QVBoxLayout, QHBoxLayout, QFrame, QSizePolicy
 from PyQt6.QtCore import Qt, QTimer
-from markdown import markdown
 from l3m.l3mBouncingEclipses import BouncingElipses
 
 class ChatMessage(QWidget):
@@ -11,7 +8,7 @@ class ChatMessage(QWidget):
         self.is_user = is_user
         self.setStyleSheet("background-color: rgba(255,0,0,0.1);") if is_user else self.setStyleSheet("background-color: rgba(255,0,255,0.1);")
 
-        self.setSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Minimum)
+        self.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
         self.setContentsMargins(0,0,0,0)
 
         QTimer.singleShot(0, self.update_label_width)
@@ -32,7 +29,7 @@ class ChatMessage(QWidget):
         self.label.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
         self.label.setContentsMargins(0,0,0,0)
         self.label.setTextInteractionFlags(Qt.TextInteractionFlag.TextSelectableByMouse)
-        self.label.setWordWrap(True)
+        self.label.setWordWrap(False)
         self.label.setStyleSheet("""
             QLabel {
                 color: white;
@@ -42,28 +39,7 @@ class ChatMessage(QWidget):
             }
         """)
         self.label.setText(message)
-        """
-        self.label = QTextBrowser()
-        self.label.setReadOnly(True)
-        self.label.setOpenExternalLinks(True)
-        self.label.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
-        self.label.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
-        self.label.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
-        self.label.setStyleSheet(""""""
-            QTextBrowser {
-                border: none;
-                background-color: transparent;
-                color: white;
-                font-family: Consolas, monospace;
-                font-size: 14pt;
-                padding: 0px;
-                margin: 0px;
-            }
-        """""")
-        self.label.setMinimumHeight(1)
-        self.label.setText(message)
-        self.adjust_text_browser_height()
-        """
+
         # Bubble layout
         self.bubble_layout = QVBoxLayout(self.bubble)
         self.bubble_layout.setContentsMargins(0, 0, 0, 0)
@@ -83,22 +59,30 @@ class ChatMessage(QWidget):
     def append_text(self, text: str):
         current = self.label.text()
         self.label.setText(current + text)
-        #current = self.label.toHtml()
-        #self.label.setHtml(current + text)
     
     def update_label_width(self):
         parent = self.parentWidget()
-        grandparent = parent.parentWidget() if parent else None
+        if not parent:
+            return
+        
+        container_width = parent.width()
+        max_bubble_width = int(container_width * 0.75) if self.is_user else container_width
 
-        if grandparent:
-            container_width = grandparent.width()
-            max_bubble_width = int(container_width * 0.75) if self.is_user else container_width
+        self.bubble.setMaximumWidth(max_bubble_width)
+        self.label.setMaximumWidth(max_bubble_width)
 
-            self.bubble.setMaximumWidth(max_bubble_width)
-            self.label.setMaximumWidth(max_bubble_width)
+        # Measure the actual rendered text width
+        font_metrics = self.label.fontMetrics()
+        text_width = font_metrics.horizontalAdvance(self.label.text())
+        buffer = 20
 
-            # Debug
-            print(f"{'User' if self.is_user else 'Bot'} bubble max width: {max_bubble_width}, container: {container_width}")
+        if text_width > (max_bubble_width-buffer):
+            self.label.setWordWrap(True)
+            self.label.setFixedWidth(max_bubble_width)
+        else:
+            self.label.setWordWrap(False)
+            self.label.setMinimumWidth(0)
+
     
     def resizeEvent(self, event):
         self.update_label_width()

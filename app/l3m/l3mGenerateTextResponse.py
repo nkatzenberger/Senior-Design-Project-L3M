@@ -67,7 +67,7 @@ class GenerateTextResponse(QRunnable):
                 "temperature": TEMPERATURE,
                 "top_k": TOP_K,
                 "top_p": TOP_P,
-                "do_sample": False,
+                "do_sample": True,
                 "streamer": streamer,
                 "repetition_penalty": 1.2,                      # Avoid loops and rambling
                 "eos_token_id": self.tokenizer.eos_token_id,    # Stop at end-of-sequence
