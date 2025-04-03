@@ -11,6 +11,7 @@ class PromptModel(QWidget):
     def __init__(self, main_gui):
         super().__init__()
         self.main_gui = main_gui  # Store reference to GUI
+        self.active_response = None
 
         # Setup Chat Area
         self.chat_layout = QVBoxLayout()
@@ -71,7 +72,7 @@ class PromptModel(QWidget):
         # Setup Input Area
         self.input_field = QLineEdit()
         self.input_field.setPlaceholderText("Type your message here...")
-        self.input_field.returnPressed.connect(self.send_message)
+        self.input_field.returnPressed.connect(self.send_or_stop_message)
         self.input_field.setStyleSheet("""
             QLineEdit {
                 background: transparent;
@@ -88,7 +89,7 @@ class PromptModel(QWidget):
 
         self.send_button = QPushButton("Send")
         self.send_button.setFixedSize(36, 36)
-        self.send_button.clicked.connect(self.send_message)
+        self.send_button.clicked.connect(self.send_or_stop_message)
         self.send_button.setStyleSheet("""
             QPushButton {
                 background-color: #aaaaaa;
@@ -133,14 +134,14 @@ class PromptModel(QWidget):
         if self.parent():
             scrollbar_width = self.scroll_area.verticalScrollBar().sizeHint().width()
             new_width = int(self.parent().width() * 0.5)
-            self.chat_container.setFixedWidth(new_width + 8 + scrollbar_width)
+            self.chat_container.setFixedWidth(new_width)
             self.input_container.setFixedWidth(new_width)
 
             # Apply left margin to compensate for scrollbar
             self.chat_wrapper_layout.setContentsMargins(scrollbar_width, 0, 0, 0)
 
     #Function for adding users prompt to chat window
-    def add_message(self, message: str, alignment: Qt.AlignmentFlag, user: bool = False):
+    def add_message(self, message: str, user: bool = False):
         msg_widget = ChatMessage(message, is_user=user)
         self.chat_layout.addWidget(msg_widget)
         self.chat_container.adjustSize()
@@ -150,8 +151,16 @@ class PromptModel(QWidget):
 
 
     # Function that sends users prompt to the model
-    def send_message(self):
+    def send_or_stop_message(self):
+        # If a generation is in progress, stop it
+        if self.active_response:
+            self.active_response.stop()
+            self.reset_send_button()
+            return
+        
         user_message = self.input_field.text().strip()
+        self.streaming_response = None
+
         if not user_message:
             return
 
@@ -159,7 +168,7 @@ class PromptModel(QWidget):
             QMessageBox.warning(self, "No Model Selected", "Please select a model first")
             return
 
-        self.add_message(user_message, alignment=Qt.AlignmentFlag.AlignRight, user=True)
+        self.add_message(user_message, user=True)
 
         self.loading_widget = LoadingMessage()
         self.chat_layout.addWidget(self.loading_widget)
@@ -168,18 +177,42 @@ class PromptModel(QWidget):
             self.scroll_area.verticalScrollBar().maximum()
         )
 
-        prompt_model = GenerateTextResponse(user_message, self.main_gui)
-        prompt_model.signals.result.connect(self.respond_to_message)
-        self.main_gui.pool.start(prompt_model)
+        self.active_response = GenerateTextResponse(user_message, self.main_gui)
+        self.active_response.signals.token_stream.connect(self.handle_token_stream)
+        self.active_response.signals.finished.connect(self.respond_to_streamed_message)
+        self.main_gui.pool.start(self.active_response)
 
         self.input_field.clear()
+        self.set_stop_button()
+
+    def set_stop_button(self):
+        self.send_button.setText("Stop")
+
+    def reset_send_button(self):
+        self.send_button.setText("Send")
+        self.active_response = None
 
     # Function for adding models response to chat window
-    def respond_to_message(self, message: str):
-        if self.loading_widget:
-            self.chat_layout.removeWidget(self.loading_widget)
-            self.loading_widget.setParent(None)
-            self.loading_widget = None
+    def handle_token_stream(self, token: str):
+    # On first token, replace the loading animation with a response bubble
+        if self.streaming_response is None:
+            if self.loading_widget:
+                self.chat_layout.removeWidget(self.loading_widget)
+                self.loading_widget.setParent(None)
+                self.loading_widget = None
 
-        self.add_message(message, alignment=Qt.AlignmentFlag.AlignLeft, user=False)
+            self.streaming_response = ChatMessage(message="", is_user=False)
+            self.chat_layout.addWidget(self.streaming_response)
+            self.chat_container.adjustSize()
+            self.scroll_area.verticalScrollBar().setValue(
+                self.scroll_area.verticalScrollBar().maximum()
+            )
+
+        # Append the streamed token
+        if self.streaming_response:
+            self.streaming_response.append_text(token)
+
+    # Function for clean up and storing full response in history
+    def respond_to_streamed_message(self, full_response: str):
+        self.reset_send_button()
 
