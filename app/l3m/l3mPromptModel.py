@@ -1,5 +1,6 @@
 from l3m.l3mGenerateTextResponse import GenerateTextResponse
-from l3m.l3mChatMessage import ChatMessage, LoadingMessage
+from l3m.l3mChatMessage import ChatMessage
+from l3m.l3mLoadingMessage import LoadingMessage
 from PyQt6.QtWidgets import (
     QPushButton, QScrollArea, QLineEdit, QHBoxLayout, QWidget, QVBoxLayout, QMessageBox,
     QSizePolicy, QSpacerItem
