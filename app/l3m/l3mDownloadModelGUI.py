@@ -1,5 +1,6 @@
 from l3m.l3mDownloadModel import DownloadModel
 from l3m.l3mHuggingFaceModelsAPI import HuggingFaceModelsAPI
+from l3m.l3mDownloadProgressBar import DownloadWindow
 from PyQt6.QtWidgets import QWidget, QVBoxLayout, QLineEdit, QListWidget, QPushButton, QApplication
 from PyQt6.QtCore import Qt, QEvent, QTimer
 
@@ -114,8 +115,11 @@ class DownloadModelGUI(QWidget):
             download_button.setEnabled(False)
 
             # Start download process
+            self.ProgressWindow = DownloadWindow()
+            self.ProgressWindow.show()
             self.download_model_thread = DownloadModel(model_metadata)
             self.download_model_thread.model_download_complete.connect(self.model_panel.onModelDownloadComplete)
+            self.download_model_thread.model_download_complete.connect(self.ProgressWindow.download_complete.emit)
             self.download_model_thread.start()
 
             # Close the popup after 2 seconds

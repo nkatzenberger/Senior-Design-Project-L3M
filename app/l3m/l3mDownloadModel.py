@@ -1,15 +1,18 @@
 import os
 import shutil
 import json
+import sys
 from PyQt6.QtCore import QThread, pyqtSignal
 from transformers import AutoModel, AutoTokenizer, AutoConfig
 from utils.device_utils import DeviceManager
 from utils.path_utils import PathManager
 from utils.logging_utils import LogManager
+#from l3m.l3mDownloadProgressBar import QTextEditTqdmOutput, StreamRedirector
+#from transformers.utils import logging as hf_logging
 
 class DownloadModel(QThread):
     model_download_complete = pyqtSignal(bool, str, dict)
-
+    #progress_text = pyqtSignal(str)
     def __init__(self, model_metadata: dict):
         super(DownloadModel, self).__init__()
         self._is_running = True
@@ -30,7 +33,13 @@ class DownloadModel(QThread):
 
             if not self._is_running: # Stop before starting download
                 return
-            
+            """
+            self.redirector = StreamRedirector()
+            self.redirector.new_text.connect(self.progress_text.emit)
+            sys.stdout = self.redirector
+            sys.stderr = self.redirector
+            self.tqdm_handler = QTextEditTqdmOutput(self.redirector)
+            hf_logging.get_logger().handlers[0].stream = self.tqdm_handler"""
             # Download the model, tokenizer, and config
             model = AutoModel.from_pretrained(
                 self.model_id, 
