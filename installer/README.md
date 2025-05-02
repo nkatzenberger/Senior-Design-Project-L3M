@@ -17,4 +17,4 @@ To create the installer you must have Inno Setup installed. You can find this at
 
 1. Open Inno Setup Compiler
 2. Open the installer.iss file in the compiler
-3. Run the compiler and the L3M_installer.exe will be created in the output folder
+3. Run the compiler and the L3M_installer folder will be created in the output folder

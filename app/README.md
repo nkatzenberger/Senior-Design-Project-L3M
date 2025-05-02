@@ -2,29 +2,39 @@ This folder is for the GUI application that the user will install
 
 This only works with python verion 3.12.3 currently. Make sure to be using this verions of python or the code will not work.
 
-make sure to cd into the GUI folder to run and do, also advised to use a pip virtual environment in dev for making sure there are no package conflicts
+Make sure to cd into the GUI folder to run, also its strongly advised to use a pip virtual environment in dev for making sure there are no package conflicts
 info can be found here: https://www.activestate.com/blog/how-to-manage-dependencies-in-python/
 
+To create a virtual environmnt do:
 ```bash
-$ pip install
+$ python3.12 -m venv venv
 ```
 
-will install everything in requirements.txt which is needed to run the app.
-to update the file if new packages are added, do:
-
+To activate the venv do:
 ```bash
-$ pip freeze > requirements.txt
+$ venv/Scripts/activate
 ```
 
--while CD'd into the GUI folder
-
-to install a model:
+To install all dependencies run our install script:
 ```bash
-$ cd gui
-$ python modelDownload.py
+$ python install_deps.py
 ```
+will install everything in requirements.txt as well as create a lib folder with two versions of torch which is needed to run the app. The app auto selects the correct version of torch depending on your system.
 
-to prompt the model you just installed run:
+To start the app run:
 ```bash
-$ python gpt_prompt.py --prompt "ENTER PROMPT HERE"
+$ python main.py
 ```
+this is our entry script
+
+To update the file if new packages are added:
+1. Add the package manually to requirements.in
+2. If pip-tools is not installed install it
+```bash
+$ pip install pip-tools
+```
+3. Create new requirements txt by running:
+```bash
+$ pip-compile --upgrade requirements.in
+```
+4. Important! - Delete Torch, TorchVision, TorchAudio from requirements.txt

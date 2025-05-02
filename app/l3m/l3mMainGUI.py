@@ -22,7 +22,7 @@ class GUI(QMainWindow):
         self.ref_prompt_panel = PromptPanel(self) # Pass reference to GUI so PromptPanel can update GUI
 
         # Set up the main window
-        self.setWindowTitle("L3M GUI V 1.0.0")
+        self.setWindowTitle("L3M GUI V 1.1.2")
         self.setGeometry(100, 100, 1280, 720)
 
         # Central widget that holds all UI Elements

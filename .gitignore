@@ -1,3 +1,4 @@
+*.pem
 /.venv
 /.vscode
 /venv
@@ -20,7 +21,7 @@
 /app/test/__pycache__
 /app/test/.pytest_cache
 
-/installer/output
+/installer/dist
 
 /webServer/backend/__pycache__
 /webServer/backend/.env
