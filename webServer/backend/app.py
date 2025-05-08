@@ -2,6 +2,9 @@ import os
 import logging
 import random
 import requests
+from huggingface_hub import HfApi
+import httpx
+import asyncio
 from flask import render_template, request, jsonify, send_file
 from config import app
 
@@ -22,36 +25,55 @@ def search():
     limit = 6
     page = request.args.get('page', default=1, type=int)
 
-    url = "https://huggingface.co/api/models"
-    headers = {
-        'Authorization': f'Bearer {HUGGING_FACE_API_TOKEN}',
-        'Content-Type': 'application/json'
-    }
-    params = {
-        "limit": 50
-    }
-    if query:
-        params["search"] = query
+    api = HfApi()
 
     try:
-        response = requests.get(url, headers=headers, params=params)
-        response.raise_for_status()
-        models = response.json()
+        # Step 1: Fetch model list (basic info)
+        models = api.list_models(
+            search=query,
+            library="transformers",
+            pipeline_tag="text-generation",
+            limit=50
+        )
 
-        # Apply manual pagination within the 100 models
-        total_models = min(len(models), 100)  # Ensure we don't exceed 100
+        # Step 2: Extract model IDs
+        model_ids = [model.modelId for model in models]
+
+        # Step 3: Fetch detailed model info
+        async def fetch_all_details(model_ids):
+            async with httpx.AsyncClient() as session:
+                tasks = [
+                    fetch_model_info(session, model_id)
+                    for model_id in model_ids
+                ]
+                results = await asyncio.gather(*tasks)
+                return [r for r in results if "Error" not in r and not r.get("gated", False) and not r.get("disabled", False)]
+
+        async def fetch_model_info(session, model_id):
+            url = f"https://huggingface.co/api/models/{model_id}"
+            try:
+                response = await session.get(url, timeout=10.0)
+                response.raise_for_status()
+                return response.json()
+            except Exception:
+                return {"Model ID": model_id, "Error": "Failed to fetch"}
+
+        model_infos = asyncio.run(fetch_all_details(model_ids))
+
+        # Step 4: Manual pagination
+        total_models = min(len(model_infos), 100)
         total_pages = (total_models // limit) + (1 if total_models % limit > 0 else 0)
 
         start_index = (page - 1) * limit
         end_index = start_index + limit
-        paginated_models = models[start_index:end_index]
+        paginated_models = model_infos[start_index:end_index]
 
         return jsonify({
             "models": paginated_models,
             "totalPages": total_pages
         })
 
-    except requests.exceptions.RequestException as e:
+    except Exception as e:
         logger.error(f"Error fetching models: {e}")
         return jsonify({'error': 'Error fetching models'}), 500
 
